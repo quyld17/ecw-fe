@@ -1,0 +1,36 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing dependencies...
+      - sudo apt-get update
+      - sudo apt-get install -y jq
+
+  pre_build:
+    commands:
+      - echo Logging in to Docker Hub...
+      - |
+        # Retrieve Docker credentials from Secrets Manager
+        SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id docker-user --query SecretString --output text)
+        DOCKER_USERNAME=$(echo $SECRET_JSON | jq -r '.username')
+        DOCKER_PASSWORD=$(echo $SECRET_JSON | jq -r '.password')
+
+        # Log in to Docker Hub
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - echo Retrieving credentials from Secrets Manager
+      - |
+        SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id ecw/frontend/env --query SecretString --output text)
+        echo "NEXT_PUBLIC_URL=$(echo $SECRET_JSON | jq -r '.NEXT_PUBLIC_URL')" >> .env
+        echo "NEXT_PUBLIC_PORT=$(echo $SECRET_JSON | jq -r '.NEXT_PUBLIC_PORT')" >> .env
+
+  build:
+    commands:
+      - echo Building Docker image...
+      - docker build -t quyld17/ecw-front-end:latest .
+
+  post_build:
+    commands:
+      - echo Pushing Docker image to Docker Hub...
+      - docker push quyld17/ecw-front-end:latest
