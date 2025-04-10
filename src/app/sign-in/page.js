@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import Head from "next/head";
@@ -5,7 +7,7 @@ import { useRouter } from "next/navigation";
 import validator from "validator";
 
 import styles from "./styles.module.css";
-import handleSignInAPI from "../api/handlers/sign-in";
+import handleSignInAPI from "../../api/handlers/sign-in";
 
 import { Layout, theme, Form, Input, Button, message } from "antd";
 

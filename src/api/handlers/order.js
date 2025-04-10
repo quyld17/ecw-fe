@@ -7,7 +7,6 @@ export function handleCreateOrderAPI(paymentMethod) {
     const info = {
       payment_method: paymentMethod,
     };
-
     const endpoint = "/orders";
 
     postMethodAPI(
@@ -18,6 +17,7 @@ export function handleCreateOrderAPI(paymentMethod) {
       },
       (error) => {
         reject(error);
+        message.error(error);
       }
     );
   });

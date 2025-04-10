@@ -1,0 +1,34 @@
+.navigationBar {
+  display: flex;
+  align-items: center;
+  justify-self: space-between;
+}
+
+.websiteLogo {
+  color: white;
+  margin-left: 20px;
+}
+
+.mainPage {
+  background-color: white;
+}
+
+.content {
+  margin: 20px 0;
+  padding: 20px;
+  text-align: center;
+  align-self: center;
+  width: 500px;
+  border-radius: 14px;
+  background-color: #fff;
+  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1);
+}
+
+.signUpCompleteTitle {
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.redirect {
+  color: lightskyblue;
+}

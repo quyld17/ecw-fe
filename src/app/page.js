@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import styles from "./page.module.css";
 import ProductsDisplay from "./products-display/index";
 import NavigationBar from "../component/navigation-bar/index";
+import SideBar from "../component/side-bar/index";
 
 import Head from "next/head";
 import { Layout } from "antd";
@@ -17,7 +17,7 @@ export default function Home() {
       </Head>
       <NavigationBar />
       <Layout className={styles.body}>
-        {/* <SideBar /> */}
+        <SideBar />
         <Layout className={styles.contentLayout}>
           <Content className={styles.content}>
             <ProductsDisplay />

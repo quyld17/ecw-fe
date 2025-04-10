@@ -1,0 +1,115 @@
+.layout {
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.productsField {
+  max-width: 1200px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  border-radius: 14px;
+  background-color: #fff;
+  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1);
+}
+
+.productThumbnailAndName {
+  display: flex;
+  align-items: center;
+}
+
+.productThumbnail {
+  margin-right: 10px;
+  width: 100px;
+}
+
+.deliveryAddressField {
+  max-width: 1200px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  border-radius: 14px;
+  background-color: #fff;
+  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1);
+}
+
+.deliveryAddressTitle {
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.paymentField {
+  max-width: 1200px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  border-radius: 14px;
+  background-color: #fff;
+  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1);
+}
+
+.paymentMethodTitle {
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.paymentMethodSelectField {
+  font-size: 16px;
+}
+
+.totalField {
+  max-width: 1200px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  border-radius: 14px;
+  background-color: #fff;
+  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1);
+}
+
+.textField {
+  width: 300px;
+  margin-left: auto;
+}
+
+.subtotal {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 20px;
+}
+
+.shippingTotal {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 20px;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  font-size: 20px;
+}
+
+.placeOrderButtonField {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.placeOrderButton {
+  font-size: 25px;
+  width: 200px;
+  height: 50px;
+}

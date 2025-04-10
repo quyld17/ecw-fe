@@ -36,6 +36,7 @@ export function handleChangePasswordAPI(user) {
       },
       (error) => {
         reject(error);
+        message.error(error);
       }
     );
   });

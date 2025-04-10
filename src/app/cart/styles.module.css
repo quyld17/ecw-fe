@@ -1,0 +1,65 @@
+.layout {
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.content {
+  max-width: 1200px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  border-radius: 14px;
+  background-color: #fff;
+  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1);
+}
+
+.productThumbnailAndName {
+  display: flex;
+  align-items: center;
+}
+
+.productThumbnail {
+  margin-right: 10px;
+  width: 100px;
+  cursor: pointer;
+}
+
+.deleteButton {
+  color: lightskyblue;
+}
+
+.productName {
+  cursor: pointer;
+}
+
+.table {
+  font-size: 20px;
+}
+
+.checkoutBar {
+  width: 300px;
+  margin-top: 20px;
+  margin-left: auto;
+}
+
+.checkoutBarTotal {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.checkoutButtonField {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.checkOutButton {
+  font-size: 25px;
+  width: 200px;
+  height: 50px;
+}
