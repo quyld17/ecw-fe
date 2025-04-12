@@ -9,29 +9,27 @@ export default function SideBar() {
   const renderMenuItems = (menuItems) => {
     return menuItems.map((menuItem) => {
       if (menuItem.items) {
-        return (
-          <Menu.SubMenu
-            key={menuItem.key}
-            title={
-              <span>
-                {menuItem.icon}
-                {menuItem.label}
-              </span>
-            }
-          >
-            {renderMenuItems(menuItem.items)}
-          </Menu.SubMenu>
-        );
+        return {
+          key: menuItem.key,
+          icon: menuItem.icon,
+          label: menuItem.label, // Removed icon here
+          children: renderMenuItems(menuItem.items),
+        };
       } else {
-        return (
-          <Menu.Item key={menuItem.key}>
-            {menuItem.icon}
-            {menuItem.label}
-          </Menu.Item>
-        );
+        return {
+          key: menuItem.key,
+          icon: menuItem.icon,
+          label: menuItem.label, // Removed icon here
+        };
       }
     });
   };
+
+  // Generate the items for both sortingItems and categoryItems
+  const menuItems = [
+    ...renderMenuItems(sortingItems),
+    ...renderMenuItems(categoryItems),
+  ];
 
   return (
     <Sider
@@ -49,11 +47,8 @@ export default function SideBar() {
           borderRight: 0,
           boxShadow: "0 2px 30px rgba(0, 0, 0, 0.1)",
         }}
-        // items={sortingItems}
-      >
-        {renderMenuItems(sortingItems)}
-        {renderMenuItems(categoryItems)}
-      </Menu>
+        items={menuItems} // Use items prop here
+      />
     </Sider>
   );
 }

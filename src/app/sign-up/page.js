@@ -6,55 +6,57 @@ import Head from "next/head";
 import { useRouter } from "next/navigation";
 import validator from "validator";
 
-import handleSignUpAPI from "../../api/handlers/sign-up";
+import { handleSignUpAPI } from "../../api/handlers/sign-up";
 import styles from "./styles.module.css";
 
 import { Layout, Form, Input, Button, message } from "antd";
 const { Content, Header } = Layout;
 
 const signUpValidate = (email, password, confirmPassword) => {
-  const formValidate = () => {
-    if (!email) {
-      return "Email must not be empty! Please try again";
-    } else if (!password) {
-      return "Password must not be empty! Please try again";
-    } else if (!confirmPassword) {
-      return "Confirm password must not be empty! Please try again";
-    } else if (!validator.isEmail(email)) {
-      return "Invalid email address! Email must include '@' and a domain";
-    } else if (password !== confirmPassword) {
-      return "Passwords not matched! Please try again";
-    }
-    return null;
-  };
-
-  const validationError = formValidate();
-  if (validationError) {
-    return message.error(validationError);
+  if (!email) {
+    return "Email must not be empty! Please try again";
+  } else if (!password) {
+    return "Password must not be empty! Please try again";
+  } else if (!confirmPassword) {
+    return "Confirm password must not be empty! Please try again";
+  } else if (!validator.isEmail(email)) {
+    return "Invalid email address! Email must include '@' and a domain";
+  } else if (password !== confirmPassword) {
+    return "Passwords not matched! Please try again";
   }
+  return null;
 };
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
 
   const handleSignUp = (e) => {
     e.preventDefault();
-    if (!signUpValidate(email, password, confirmPassword)) {
-      handleSignUpAPI(email, password)
-        .then(() => {
-          router.push("/sign-up-complete");
-        })
-        .catch((error) => {
-          message.error(error);
-        });
+    const errorMessage = signUpValidate(email, password, confirmPassword);
+    if (errorMessage) {
+      messageApi.open({
+        type: "error",
+        content: errorMessage,
+      });
+      return;
     }
+
+    handleSignUpAPI(email, password)
+      .then(() => {
+        router.push("/sign-up-complete");
+      })
+      .catch((error) => {
+        message.error(error);
+      });
   };
 
   return (
     <Layout>
+      {contextHolder}
       <Head>
         <title>Sign Up</title>
       </Head>

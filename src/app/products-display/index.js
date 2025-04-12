@@ -10,55 +10,61 @@ import { Card, Button, message, Pagination } from "antd";
 const { Meta } = Card;
 
 export default function ProductsDisplay() {
-  // const [token, setToken] = useState("");
-  // const [products, setProducts] = useState([]);
-  // const [numOfProds, setNumOfProds] = useState(0);
-  // const router = useRouter();
-
-  // const currentPage = parseInt(router.query.page) || 1;
+  const [token, setToken] = useState("");
+  const [products, setProducts] = useState([]);
+  const [numOfProds, setNumOfProds] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
 
   // useEffect(() => {
-  //   const storedToken = localStorage.getItem("token");
-  //   setToken(storedToken);
+  // Ensure that the router query is available on the client side
+  if (router.query && router.query.page) {
+    setCurrentPage(parseInt(router.query.page) || 1);
+  }
+  // }, [router.query]);
 
-  //   handleGetAllProductsAPI(currentPage)
-  //     .then((data) => {
-  //       setProducts(data.products);
-  //       setNumOfProds(data.num_of_prods);
-  //     })
-  //     .catch((error) => {
-  //       console.log("Error getting delivery address: ", error);
-  //     });
-  // }, [currentPage]);
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
 
-  // const handleClick = (id) => {
-  //   router.push(`/product/${id}`);
-  // };
+    handleGetAllProductsAPI(currentPage)
+      .then((data) => {
+        setProducts(data.products);
+        setNumOfProds(data.num_of_prods);
+      })
+      .catch((error) => {
+        console.log("Error getting delivery address: ", error);
+      });
+  }, [currentPage]);
 
-  // const handleAddToCartClick = (event, id) => {
-  //   event.stopPropagation();
+  const handleClick = (id) => {
+    router.push(`/product/${id}`);
+  };
 
-  //   if (token === null) {
-  //     message.info("Please sign in to continue");
-  //     return;
-  //   }
+  const handleAddToCartClick = (event, id) => {
+    event.stopPropagation();
 
-  //   handleAddToCartAPI(id, 1)
-  //     .then(() => {
-  //       message.success("Add product to cart successfully!");
-  //     })
-  //     .catch((error) => {
-  //       message.error(error);
-  //     });
-  // };
+    if (token === null) {
+      message.info("Please sign in to continue");
+      return;
+    }
 
-  // const handlePageChange = (page) => {
-  //   router.push(`?page=${page}`);
-  // };
+    handleAddToCartAPI(id, 1)
+      .then(() => {
+        message.success("Add product to cart successfully!");
+      })
+      .catch((error) => {
+        message.error(error);
+      });
+  };
+
+  const handlePageChange = (page) => {
+    router.push(`?page=${page}`);
+  };
 
   return (
     <div>
-      {/* <div className={styles.overall}>
+      <div className={styles.overall}>
         {products.map((product) => (
           <Card
             className={styles.card}
@@ -97,7 +103,7 @@ export default function ProductsDisplay() {
         total={numOfProds}
         current={currentPage}
         onChange={handlePageChange}
-      /> */}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { message } from "antd";
 import postMethodAPI from "../methods/post-method-api";
 
-export default function handleSignUpAPI(email, password) {
+export function handleSignUpAPI(email, password) {
   return new Promise((resolve, reject) => {
     const credentials = {
       email,
