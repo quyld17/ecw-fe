@@ -13,28 +13,11 @@ import { Layout, theme, Form, Input, Button, message } from "antd";
 
 const { Content, Header } = Layout;
 
-const credentialsValidate = (email, password) => {
-  const formValidate = () => {
-    if (!email) {
-      return "Email must not be empty! Please try again";
-    } else if (!password) {
-      return "Password must not be empty! Please try again";
-    } else if (!validator.isEmail(email)) {
-      return "Invalid email address! Email must include '@' and a domain";
-    }
-    return null;
-  };
-
-  const validationError = formValidate();
-  if (validationError) {
-    return message.error(validationError);
-  }
-};
-
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const {
     token: { colorBgContainer },
@@ -54,8 +37,31 @@ export default function SignInPage() {
     }
   };
 
+  const credentialsValidate = (email, password) => {
+    const formValidate = () => {
+      if (!email) {
+        return "Email must not be empty! Please try again";
+      } else if (!password) {
+        return "Password must not be empty! Please try again";
+      } else if (!validator.isEmail(email)) {
+        return "Invalid email address! Email must include '@' and a domain";
+      }
+      return null;
+    };
+
+    const validationError = formValidate();
+    if (validationError) {
+      messageApi.open({
+        type: "error",
+        content: validationError,
+      });
+      return;
+    }
+  };
+
   return (
     <Layout>
+      {contextHolder}
       <Head>
         <title>Sign In</title>
       </Head>

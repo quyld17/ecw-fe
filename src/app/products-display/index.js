@@ -15,6 +15,7 @@ export default function ProductsDisplay() {
   const [numOfProds, setNumOfProds] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
 
   // useEffect(() => {
   // Ensure that the router query is available on the client side
@@ -45,16 +46,19 @@ export default function ProductsDisplay() {
     event.stopPropagation();
 
     if (token === null) {
-      message.info("Please sign in to continue");
+      messageApi.info("Please sign in to continue");
       return;
     }
 
     handleAddToCartAPI(id, 1)
       .then(() => {
-        message.success("Add product to cart successfully!");
+        messageApi.open({
+          type: "success",
+          content: "Add product to cart successfully!",
+        });
       })
       .catch((error) => {
-        message.error(error);
+        messageApi.info(error);
       });
   };
 
@@ -64,6 +68,7 @@ export default function ProductsDisplay() {
 
   return (
     <div>
+      {contextHolder}
       <div className={styles.overall}>
         {products.map((product) => (
           <Card

@@ -1,7 +1,7 @@
 import { handleAdjustCartProductQuantityAPI } from "../../api/handlers/cart";
 import { handleGetCartProducts } from "./get-products";
 
-export default function handleAdjustQuantity(
+export function handleAdjustQuantity(
   id,
   quantity,
   cartProducts,

@@ -5,6 +5,7 @@ import ProductsDisplay from "./products-display/index";
 import NavigationBar from "../component/navigation-bar/index";
 import SideBar from "../component/side-bar/index";
 
+import "@ant-design/v5-patch-for-react-19";
 import Head from "next/head";
 import { Layout } from "antd";
 const { Content } = Layout;

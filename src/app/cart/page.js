@@ -1,32 +1,22 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 
 import NavigationBar from "../../component/navigation-bar/index";
 import { handleGetCartProducts } from "../../component/cart/get-products";
-import { cartColumns, cartData } from "../../component/cart/product-table/index";
+import {
+  cartColumns,
+  cartData,
+} from "../../component/cart/product-table/index";
 import { handleCancel, handleOk } from "../../component/cart/delete-confirm";
-import handleAdjustQuantity from "../../component/cart/adjust-quantity";
+import { handleAdjustQuantity } from "../../component/cart/adjust-quantity";
 import { handleSelectProducts } from "../../component/cart/select-products";
 
 import styles from "./styles.module.css";
 
 import { Button, Table, Modal, message } from "antd";
-
-const handleProductRedirect = (id, router) => {
-  router.push(`/product/${id}`);
-};
-
-const handleCheckOut = (router, selectedRowKeys) => {
-  if (selectedRowKeys.length === 0) {
-    message.error(
-      "You have not selected anything for check out. Please try again"
-    );
-    return;
-  } else {
-    router.push("/check-out");
-  }
-};
 
 export default function CartPage() {
   const [cartProducts, setCartProducts] = useState([]);
@@ -34,6 +24,7 @@ export default function CartPage() {
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRowKeysPrev, setSelectedRowKeysPrev] = useState([]);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const [total, setTotal] = useState(0);
   const router = useRouter();
@@ -53,6 +44,10 @@ export default function CartPage() {
       setSelectedRowKeysPrev
     );
   }, []);
+
+  const handleProductRedirect = (id, router) => {
+    router.push(`/product/${id}`);
+  };
 
   const adjustedQuantityHandler = (id, quantity) => {
     handleAdjustQuantity(
@@ -91,8 +86,22 @@ export default function CartPage() {
     onChange: handleSelectedProducts,
   };
 
+  const handleCheckOut = (router, selectedRowKeys) => {
+    if (selectedRowKeys.length === 0) {
+      messageApi.open({
+        type: "error",
+        content:
+          "You have not selected anything for check out. Please try again",
+      });
+      return;
+    } else {
+      router.push("/check-out");
+    }
+  };
+
   return (
     <div className={styles.layout}>
+      {contextHolder}
       <Head>
         <title>Cart</title>
       </Head>
