@@ -67,7 +67,7 @@ export default function CheckOut() {
         if (data.message) {
           message.error(data.message);
         } else {
-          router.push("/order-complete");
+          router.push("/check-out/complete");
         }
       })
       .catch((error) => {

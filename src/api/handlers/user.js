@@ -1,7 +1,7 @@
 import getMethodAPI from "../methods/get-method-api";
 import putMethodAPI from "../methods/put-method-api";
 
-import message from "antd";
+import { message } from "antd";
 
 export function handleGetUserDetailsAPI() {
   return new Promise((resolve, reject) => {
