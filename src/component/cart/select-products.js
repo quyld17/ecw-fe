@@ -17,9 +17,6 @@ export const handleSelectProducts = (
     (key) => !selectedRowKeys.includes(key)
   );
 
-  setSelectedRowKeys(selectedRowKeys);
-  setSelectedRowKeysPrev(selectedRowKeys);
-
   const selectedProducts = newlySelectedProducts.map((key) => {
     const product = cartProducts.find((p) => p.product_id === key);
     return {
@@ -38,31 +35,29 @@ export const handleSelectProducts = (
     };
   });
 
-  if (selectedProducts.length !== 0) {
-    handleSelectCartProductsAPI(selectedProducts)
-      .then(() => {
-        handleGetCartProducts(
-          setCartProducts,
-          setTotal,
-          setSelectedRowKeys,
-          setSelectedRowKeysPrev
-        );
-      })
-      .catch((error) => {
-        console.log("Error: ", error);
-      });
-  } else {
-    handleSelectCartProductsAPI(deselectedProducts)
-      .then(() => {
-        handleGetCartProducts(
-          setCartProducts,
-          setTotal,
-          setSelectedRowKeys,
-          setSelectedRowKeysPrev
-        );
-      })
-      .catch((error) => {
-        console.log("Error: ", error);
-      });
-  }
+  const updateSelection = async () => {
+    try {
+      if (selectedProducts.length !== 0) {
+        await handleSelectCartProductsAPI(selectedProducts);
+      } else if (deselectedProducts.length !== 0) {
+        await handleSelectCartProductsAPI(deselectedProducts);
+      }
+
+      // Only update selected states after successful update
+      setSelectedRowKeys(selectedRowKeys);
+      setSelectedRowKeysPrev(selectedRowKeys);
+
+      // Now fetch updated cart to sync with server
+      handleGetCartProducts(
+        setCartProducts,
+        setTotal,
+        setSelectedRowKeys,
+        setSelectedRowKeysPrev
+      );
+    } catch (error) {
+      console.log("Error updating selection: ", error);
+    }
+  };
+
+  updateSelection();
 };
