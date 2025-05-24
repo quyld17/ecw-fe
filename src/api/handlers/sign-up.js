@@ -1,4 +1,3 @@
-import { message } from "antd";
 import postMethodAPI from "../methods/post-method-api";
 
 export function handleSignUpAPI(email, password) {

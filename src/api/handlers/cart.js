@@ -2,7 +2,6 @@ import getMethodAPI from "../methods/get-method-api";
 import postMethodAPI from "../methods/post-method-api";
 import putMethodAPI from "../methods/put-method-api";
 import deleteMethodAPI from "../methods/delete-method-api";
-import { message } from "antd";
 
 export function handleGetAllCartProductsAPI() {
   return new Promise((resolve, reject) => {
@@ -42,7 +41,6 @@ export function handleAddToCartAPI(product_id, quantity) {
       product_id,
       quantity,
     };
-
     const endpoint = "/cart-products";
 
     postMethodAPI(

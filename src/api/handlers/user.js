@@ -1,7 +1,7 @@
 import getMethodAPI from "../methods/get-method-api";
 import putMethodAPI from "../methods/put-method-api";
-
-import { message } from "antd";
+import postMethodAPI from "../methods/post-method-api";
+import deleteMethodAPI from "../methods/delete-method-api";
 
 export function handleGetUserDetailsAPI() {
   return new Promise((resolve, reject) => {
@@ -45,6 +45,105 @@ export function handleUpdateUserDetailsAPI(userDetails) {
 
     putMethodAPI(
       userDetails,
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
+
+export function handleGetAddressesAPI() {
+  return new Promise((resolve, reject) => {
+    const endpoint = "/addresses";
+
+    getMethodAPI(
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
+
+export function handleAddAddressAPI(addressDetails) {
+  return new Promise((resolve, reject) => {
+    const endpoint = "/addresses";
+    console.log(addressDetails);
+    postMethodAPI(
+      addressDetails,
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
+
+export function handleUpdateAddressAPI(addressID, addressDetails) {
+  return new Promise((resolve, reject) => {
+    const endpoint = `/addresses/${addressID}`;
+
+    putMethodAPI(
+      addressDetails,
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error); 
+      }
+    );
+  });
+}
+
+export function handleSetDefaultAddressAPI(addressID) {
+  return new Promise((resolve, reject) => {
+    const endpoint = `/addresses/default/${addressID}`;
+
+    putMethodAPI(
+      {},
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
+
+export function handleDeleteAddressAPI(addressID) {
+  return new Promise((resolve, reject) => {
+    console.log(addressID);
+    const endpoint = `/addresses/${addressID}`;
+
+    deleteMethodAPI(
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
+
+export function handleGetDefaultAddressAPI() {
+  return new Promise((resolve, reject) => {
+    const endpoint = "/default-address";
+    getMethodAPI(
       endpoint,
       (data) => {
         resolve(data);

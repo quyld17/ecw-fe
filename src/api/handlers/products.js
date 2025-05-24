@@ -1,5 +1,4 @@
 import getMethodAPI from "../methods/get-method-api";
-import { message } from "antd";
 
 export function handleGetAllProductsAPI(currentPage) {
   return new Promise((resolve, reject) => {

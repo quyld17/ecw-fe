@@ -13,6 +13,7 @@ import {
 import { handleCreateOrderAPI } from "../../api/handlers/order";
 import { handleGetUserDetailsAPI } from "../../api/handlers/user";
 import { handleGetCartSelectedProductsAPI } from "../../api/handlers/cart";
+import { handleGetDefaultAddressAPI } from "../../api/handlers/user";
 import cartEvents from "../../utils/events";
 
 import { Table, Radio, Space, Button, message } from "antd";
@@ -57,13 +58,17 @@ export default function CheckOut() {
         console.log("Error getting check-out products' details:", error);
       });
 
-    handleGetUserDetailsAPI()
-      .then((data) => {
-        setUserInfo(data.user);
-        setAddress(data.address);
+    // Fetch user info and default address in parallel
+    Promise.all([
+      handleGetUserDetailsAPI(),
+      handleGetDefaultAddressAPI()
+    ])
+      .then(([userData, defaultAddressData]) => {
+        setUserInfo(userData.user);
+        setAddress(defaultAddressData);
       })
       .catch((error) => {
-        console.log("Error getting delivery address: ", error);
+        console.log("Error getting user or default address: ", error);
       });
   }, []);
 
@@ -78,7 +83,6 @@ export default function CheckOut() {
           content: data.message,
         });
       } else {
-        // Emit cart update event to refresh the cart count
         cartEvents.emit();
         messageApi.open({
           type: "success",
@@ -120,18 +124,12 @@ export default function CheckOut() {
         <p className={styles.deliveryAddressTitle}>Delivery Address</p>
         <p>{userInfo && userInfo.full_name}</p>
         <p>{userInfo && userInfo.phone_number}</p>
-        <p>
-          {address &&
-            address.house_number +
-              ", " +
-              address.street +
-              ", " +
-              address.ward +
-              ", " +
-              address.district +
-              ", " +
-              address.city}
-        </p>
+        {address && (
+          <div>
+            <div style={{ fontWeight: 'bold', fontSize: '18px' }}>{address.Name}</div>
+            <div>{address.Address}</div>
+          </div>
+        )}
       </div>
 
       <div className={styles.paymentField}>

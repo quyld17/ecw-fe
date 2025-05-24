@@ -7,13 +7,35 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
 
-import { handleGetUserDetailsAPI, handleUpdateUserDetailsAPI } from "../../../api/handlers/user";
+import { 
+  handleGetUserDetailsAPI, 
+  handleUpdateUserDetailsAPI,
+  handleGetAddressesAPI,
+  handleAddAddressAPI,
+  handleUpdateAddressAPI,
+  handleSetDefaultAddressAPI,
+  handleDeleteAddressAPI
+} from "../../../api/handlers/user";
 
 import UserSideBar from "../../../component/user/side-bar/page";
 import NavigationBar from "../../../component/navigation-bar/index";
 import styles from "./styles.module.css";
 
-import { Form, Input, Select, DatePicker, Button, message, Layout, Tabs } from "antd";
+import { 
+  Form, 
+  Input, 
+  Select, 
+  DatePicker, 
+  Button, 
+  message, 
+  Layout, 
+  Tabs,
+  Modal,
+  Checkbox,
+  List,
+  Space
+} from "antd";
+import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 // Add dayjs plugins
 dayjs.extend(customParseFormat);
@@ -21,7 +43,9 @@ dayjs.extend(utc);
 
 export default function Profile() {
   const [user, setUser] = useState();
-  const [address, setAddress] = useState();
+  const [addresses, setAddresses] = useState([]);
+  const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(null);
   const [activeTab, setActiveTab] = useState('1');
   const router = useRouter();
   const dateFormat = "YYYY-MM-DD";
@@ -29,6 +53,25 @@ export default function Profile() {
   const [form] = Form.useForm();
   const [addressForm] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+
+  const fetchAddresses = async () => {
+    try {
+      const data = await handleGetAddressesAPI();
+      if (data && Array.isArray(data)) {
+        const sortedAddresses = data.sort((a, b) => {
+          if (a.is_default) return -1;
+          if (b.is_default) return 1;
+          return 0;
+        });
+        setAddresses(sortedAddresses);
+      } else {
+        setAddresses([]);
+      }
+    } catch (error) {
+      console.error('Error fetching addresses:', error);
+      setAddresses([]);
+    }
+  };
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -40,9 +83,6 @@ export default function Profile() {
     handleGetUserDetailsAPI()
       .then((data) => {
         setUser(data.user);
-        setAddress(data.address);
-        
-        // Parse the date string safely
         let dateOfBirth = null;
         if (data.user.date_of_birth_string) {
           dateOfBirth = dayjs(data.user.date_of_birth_string);
@@ -52,30 +92,22 @@ export default function Profile() {
           }
         }
 
-        // Reset form with new values
         form.setFieldsValue({
           full_name: data.user.full_name || '',
           phone_number: data.user.phone_number || '',
           gender: data.user.gender === 1 ? "male" : "female",
           date_of_birth: dateOfBirth
         });
-
-        if (data.address) {
-          // Reset address form with new values
-          addressForm.setFieldsValue({
-            address: data.address.house_number + ", " + data.address.street + ", " + 
-                    data.address.ward + ", " + data.address.district + ", " + data.address.city
-          });
-        }
       })
       .catch((error) => {
         console.log("Error: ", error);
       });
+
+    fetchAddresses();
   }, []);
 
   const handleUpdateProfile = async (values) => {
     try {
-      // Set the time to 12:00 UTC to avoid date shifts across timezones
       const formattedDate = values.date_of_birth 
         ? values.date_of_birth
             .hour(12)
@@ -98,12 +130,86 @@ export default function Profile() {
         content: "Profile updated successfully!",
       });
     } catch (error) {
-      // console.error("Error updating profile:", error);
       messageApi.open({
         type: "error",
         content: "Failed to update profile",
       });
     }
+  };
+
+  const handleAddOrUpdateAddress = async (values) => {
+    try {
+      if (editingAddress) {
+        await handleUpdateAddressAPI(editingAddress.AddressID, values);
+        messageApi.open({
+          type: "success",
+          content: "Address updated successfully!",
+        });
+      } else {
+        await handleAddAddressAPI(values);
+        messageApi.open({
+          type: "success",
+          content: "Address added successfully!",
+        });
+      }
+      setIsAddressModalVisible(false);
+      addressForm.resetFields();
+      setEditingAddress(null);
+      await fetchAddresses();
+    } catch (error) {
+      console.error('Error saving address:', error);
+      messageApi.open({
+        type: "error",
+        content: "Failed to save address",
+      });
+    }
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      await handleDeleteAddressAPI(addressId);
+      messageApi.open({
+        type: "success",
+        content: "Address deleted successfully!",
+      });
+      await fetchAddresses();
+    } catch (error) {
+      console.error('Error deleting address:', error);
+      messageApi.open({
+        type: "error",
+        content: "Failed to delete address",
+      });
+    }
+  };
+
+  const handleSetDefaultAddress = async (addressId) => {
+    try {
+      await handleSetDefaultAddressAPI(addressId);
+      messageApi.open({
+        type: "success",
+        content: "Default address updated successfully!",
+      });
+      await fetchAddresses();
+    } catch (error) {
+      console.error('Error setting default address:', error);
+      messageApi.open({
+        type: "error",
+        content: "Failed to update default address",
+      });
+    }
+  };
+
+  const showAddressModal = (address = null) => {
+    setEditingAddress(address);
+    if (address) {
+      addressForm.setFieldsValue({
+        Name: address.Name || '',
+        Address: address.Address || '',
+      });
+    } else {
+      addressForm.resetFields();
+    }
+    setIsAddressModalVisible(true);
   };
 
   const items = [
@@ -175,28 +281,87 @@ export default function Profile() {
       key: '2',
       label: 'Address Information',
       children: (
-        <Form
-          form={addressForm}
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 10 }}
-          layout="horizontal"
-          style={{ maxWidth: 1000 }}
-          initialValues={{
-            address: ''
-          }}
-        >
-          <Form.Item 
-            label="Address" 
-            name="address"
+        <div>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => showAddressModal()}
+            style={{ marginBottom: 16 }}
           >
-            <Input.TextArea rows={4} />
-          </Form.Item>
-          <Form.Item wrapperCol={{ offset: 4, span: 10 }}>
-            <Button type="primary" className={styles.saveChangesButton}>
-              Save Address
-            </Button>
-          </Form.Item>
-        </Form>
+            Add New Address
+          </Button>
+          
+          <List
+            dataSource={addresses}
+            renderItem={item => (
+              <List.Item
+                actions={[
+                  <Space key="actions">
+                    <Button
+                      icon={<EditOutlined />}
+                      onClick={() => showAddressModal(item)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      icon={<DeleteOutlined />}
+                      danger
+                      onClick={() => handleDeleteAddress(item.AddressID)}
+                    >
+                      Delete
+                    </Button>
+                    <Checkbox
+                      checked={item.IsDefault === 1}
+                      onChange={() => handleSetDefaultAddress(item.AddressID)}
+                    >
+                      Default Address
+                    </Checkbox>
+                  </Space>
+                ]}
+              >
+                <div>
+                  <div style={{ fontWeight: 'bold', fontSize: '18px' }}>{item.Name}</div>
+                  <div>{item.Address}</div>
+                </div>
+              </List.Item>
+            )}
+          />
+
+          <Modal
+            title={editingAddress ? "Edit Address" : "Add New Address"}
+            open={isAddressModalVisible}
+            onOk={() => addressForm.submit()}
+            onCancel={() => {
+              setIsAddressModalVisible(false);
+              setEditingAddress(null);
+              addressForm.resetFields();
+            }}
+          >
+            <Form
+              form={addressForm}
+              layout="vertical"
+              onFinish={handleAddOrUpdateAddress}
+            >
+              <Form.Item
+                name="Name"
+                label="Address Name"
+                rules={[{ required: true, message: 'Please input address name!' }]}
+              >
+                <Input placeholder="e.g., Home, Office, etc." />
+              </Form.Item>
+              <Form.Item
+                name="Address"
+                label="Address"
+                rules={[{ required: true, message: 'Please input address!' }]}
+              >
+                <Input.TextArea 
+                  rows={4} 
+                  placeholder="Enter your full address"
+                />
+              </Form.Item>
+            </Form>
+          </Modal>
+        </div>
       ),
     },
   ];

@@ -44,3 +44,25 @@
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.addressList {
+  margin-top: 20px;
+}
+
+.addressActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.defaultAddress {
+  background-color: #f0f7ff;
+  border-left: 4px solid #1890ff;
+}
+
+.addAddressButton {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

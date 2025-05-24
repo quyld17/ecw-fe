@@ -1,6 +1,5 @@
 import postMethodAPI from "../methods/post-method-api";
 import getMethodAPI from "../methods/get-method-api";
-import { message } from "antd";
 
 export function handleCreateOrderAPI(paymentMethod) {
   return new Promise((resolve, reject) => {
