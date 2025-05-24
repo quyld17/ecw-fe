@@ -12,7 +12,6 @@ export function handleGetAllProductsAPI(currentPage) {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });
@@ -29,7 +28,6 @@ export function handleGetProductDetailsAPI(product_id) {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });

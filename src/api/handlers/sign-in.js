@@ -17,7 +17,6 @@ export default function handleSignInAPI(email, password) {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });

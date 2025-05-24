@@ -11,7 +11,7 @@ import styles from "./styles.module.css";
 
 import { Form, Input, Button, message } from "antd";
 
-const credentialsValidate = (user) => {
+const credentialsValidate = (user, messageApi) => {
   const formValidate = () => {
     if (user.password === "") {
       return "Current password must not be empty! Please try again";
@@ -29,17 +29,17 @@ const credentialsValidate = (user) => {
 
   const validationError = formValidate();
   if (validationError) {
-    return message.error(validationError);
+    messageApi.open({
+      type: "error",
+      content: validationError,
+    });
   }
 };
 
-export default function PurchaseHistory() {
-  const [user, setUser] = useState({
-    password: "",
-    new_password: "",
-    confirm_password: "",
-  });
+export default function ChangePassword() {
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -49,31 +49,42 @@ export default function PurchaseHistory() {
     }
   }, []);
 
-  const handlePasswordChange = (e) => {
-    e.preventDefault();
-    if (!credentialsValidate(user)) {
-      handleChangePasswordAPI(user)
-        .then((data) => {
-          if (typeof data === "object") {
-            // message.success(data.message || "Password changed successfully!");
-            message.error("Wrong password");
-          } else {
-            message.success(data);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          if (typeof error === "object") {
-            message.error(error.message || "An error occurred.");
-          } else {
-            message.error(error);
-          }
-        });
+  const handlePasswordChange = async (values) => {
+    if (!credentialsValidate(values, messageApi)) {
+      try {
+        const data = await handleChangePasswordAPI(values);
+        if (typeof data === "object") {
+          messageApi.open({
+            type: "error",
+            content: "Wrong password",
+          });
+        } else {
+          messageApi.open({
+            type: "success",
+            content: data,
+          });
+          // Reset form after successful password change
+          form.resetFields();
+        }
+      } catch (error) {
+        if (typeof error === "object") {
+          messageApi.open({
+            type: "error",
+            content: error.message || "An error occurred.",
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            content: error,
+          });
+        }
+      }
     }
   };
 
   return (
     <div>
+      {contextHolder}
       <Head>
         <title>Change Password</title>
       </Head>
@@ -84,6 +95,7 @@ export default function PurchaseHistory() {
           <p className={styles.changePasswordTitle}>Change Password</p>
 
           <Form
+            form={form}
             labelCol={{
               span: 5,
             }}
@@ -92,40 +104,42 @@ export default function PurchaseHistory() {
             }}
             layout="horizontal"
             style={{ maxWidth: 1000 }}
+            onFinish={handlePasswordChange}
+            initialValues={{
+              password: "",
+              new_password: "",
+              confirm_password: ""
+            }}
           >
-            <Form.Item label="Current password">
-              <Input.Password
-                type="password"
-                name="password"
-                value={user.password}
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
-              />
+            <Form.Item 
+              label="Current password"
+              name="password"
+              rules={[{ required: true, message: 'Please input your current password!' }]}
+            >
+              <Input.Password />
             </Form.Item>
 
-            <Form.Item label="New password" name="new password">
-              <Input.Password
-                type="password"
-                name="new password"
-                onChange={(e) =>
-                  setUser({ ...user, new_password: e.target.value })
-                }
-              />
+            <Form.Item 
+              label="New password" 
+              name="new_password"
+              rules={[{ required: true, message: 'Please input your new password!' }]}
+            >
+              <Input.Password />
             </Form.Item>
 
-            <Form.Item label="Confirm password" name="confirm password">
-              <Input.Password
-                type="confirm password"
-                name="password"
-                onChange={(e) =>
-                  setUser({ ...user, confirm_password: e.target.value })
-                }
-              />
+            <Form.Item 
+              label="Confirm password" 
+              name="confirm_password"
+              rules={[{ required: true, message: 'Please confirm your new password!' }]}
+            >
+              <Input.Password />
             </Form.Item>
-            <Form.Item label="">
+            
+            <Form.Item wrapperCol={{ offset: 5, span: 8 }}>
               <Button
                 className={styles.changePasswordButton}
                 type="primary"
-                onClick={handlePasswordChange}
+                htmlType="submit"
               >
                 Change Password
               </Button>

@@ -10,7 +10,7 @@ export default function handleGetAllCategoriesAPI(setCategories) {
       setCategories(data);
     },
     (error) => {
-      // message.error(error);
+      reject(error);
     }
   );
 }

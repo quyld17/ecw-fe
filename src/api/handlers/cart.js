@@ -31,7 +31,6 @@ export function handleGetCartSelectedProductsAPI() {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });
@@ -54,7 +53,6 @@ export function handleAddToCartAPI(product_id, quantity) {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });
@@ -83,7 +81,6 @@ export function handleAdjustCartProductQuantityAPI(
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });
@@ -101,7 +98,6 @@ export function handleSelectCartProductsAPI(selectedProduct) {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });
@@ -118,7 +114,6 @@ export function handleDeleteCartProductAPI(product_id) {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });

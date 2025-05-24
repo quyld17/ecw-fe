@@ -18,7 +18,6 @@ export function handleSignUpAPI(email, password) {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });

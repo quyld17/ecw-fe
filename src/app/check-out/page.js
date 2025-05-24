@@ -24,6 +24,7 @@ export default function CheckOut() {
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [subTotal, setSubTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const router = useRouter();
 
@@ -43,7 +44,10 @@ export default function CheckOut() {
     handleGetCartSelectedProductsAPI()
       .then((data) => {
         if (data.cart_products.length === 0) {
-          message.error("You have not selected any products for checkout");
+          messageApi.open({
+            type: "error",
+            content: "You have not selected any products for checkout",
+          });
           router.push("/");
         }
         setCheckOutData(data.cart_products);
@@ -69,16 +73,25 @@ export default function CheckOut() {
       const data = await handleCreateOrderAPI(paymentMethod);
       
       if (data.message) {
-        message.error(data.message);
+        messageApi.open({
+          type: "error",
+          content: data.message,
+        });
       } else {
         // Emit cart update event to refresh the cart count
         cartEvents.emit();
-        message.success("Order placed successfully!");
+        messageApi.open({
+          type: "success",
+          content: "Order placed successfully!",
+        });
         router.push("/check-out/complete");
       }
     } catch (error) {
       console.log("Place order unsuccessfully: ", error);
-      message.error("Failed to place order. Please try again.");
+      messageApi.open({
+        type: "error",
+        content: "Failed to place order. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -90,6 +103,7 @@ export default function CheckOut() {
         <title>Check Out</title>
       </Head>
       <NavigationBar />
+      {contextHolder}
 
       <div className={styles.productsField}>
         <Table

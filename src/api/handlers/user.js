@@ -14,7 +14,6 @@ export function handleGetUserDetailsAPI() {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });
@@ -26,8 +25,7 @@ export function handleChangePasswordAPI(user) {
       password: user.password,
       new_password: user.new_password,
     };
-    const endpoint = "/users/me";
-
+    const endpoint = "/users/password";
     putMethodAPI(
       info,
       endpoint,
@@ -36,7 +34,23 @@ export function handleChangePasswordAPI(user) {
       },
       (error) => {
         reject(error);
-        message.error(error);
+      }
+    );
+  });
+}
+
+export function handleUpdateUserDetailsAPI(userDetails) {
+  return new Promise((resolve, reject) => {
+    const endpoint = "/users/me";
+
+    putMethodAPI(
+      userDetails,
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
       }
     );
   });

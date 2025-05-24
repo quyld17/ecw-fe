@@ -21,12 +21,12 @@ export default function NavigationBar() {
   const [userEmail, setUserEmail] = useState("");
   const [cartProductsCount, setCartProductsCount] = useState(0);
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const updateCartCount = () => {
     if (token) {
       handleGetAllCartProductsAPI()
         .then((data) => {
-          // Only count products that haven't been deleted (quantity > 0)
           const activeProducts = data.cart_products.filter(product => product.quantity > 0);
           setCartProductsCount(activeProducts.length);
         })
@@ -48,7 +48,10 @@ export default function NavigationBar() {
       const currentTime = Date.now() / 1000;
 
       if (currentTime > expTime) {
-        message.info("Session expired! Please sign in to continue");
+        messageApi.open({
+          type: "info",
+          content: "Session expired! Please sign in to continue",
+        });
         handleSignOut();
       } else {
         const userEmail = decodedToken.email;
@@ -84,7 +87,10 @@ export default function NavigationBar() {
     setUserEmail("");
     setCartProductsCount(0);
     router.push("/");
-    message.success("Sign out successfully!");
+    messageApi.open({
+      type: "success",
+      content: "Sign out successfully!",
+    });
   };
 
   const items = [

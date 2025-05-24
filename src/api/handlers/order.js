@@ -17,7 +17,6 @@ export function handleCreateOrderAPI(paymentMethod) {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });
@@ -34,7 +33,6 @@ export function handleGetOrdersAPI() {
       },
       (error) => {
         reject(error);
-        message.error(error);
       }
     );
   });

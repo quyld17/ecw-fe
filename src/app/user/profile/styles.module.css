@@ -23,9 +23,24 @@
 }
 
 .saveChangesButton {
-  margin-top: 10px;
-  margin-left: 157px;
-  font-size: 20px;
-  width: 80px;
+  margin-top: 15px;
+  font-size: 16px;
   height: 40px;
+  min-width: 120px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.saveChangesButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.saveChangesButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

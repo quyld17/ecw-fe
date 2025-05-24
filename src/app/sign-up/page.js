@@ -50,7 +50,10 @@ export default function SignUpPage() {
         router.push("/sign-up-complete");
       })
       .catch((error) => {
-        message.error(error);
+        messageApi.open({
+          type: "error",
+          content: error,
+        });
       });
   };
 
