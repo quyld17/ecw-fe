@@ -7,6 +7,7 @@ import NavigationBar from "../../../component/navigation-bar/index";
 import styles from "./styles.module.css";
 import { handleGetProductDetailsAPI } from "../../../api/handlers/products";
 import { handleAddToCartAPI } from "../../../api/handlers/cart";
+import cartEvents from "../../../utils/events";
 
 import { Layout, Image, InputNumber, Button, message } from "antd";
 const { Content } = Layout;
@@ -68,6 +69,8 @@ export default function ProductPage({ params }) {
             type: "success",
             content: "Add product to cart successfully!",
           });
+          // Emit cart update event
+          cartEvents.emit();
         }
       })
       .catch((error) => {

@@ -1,20 +1,18 @@
 import { handleSelectCartProductsAPI } from "../../api/handlers/cart";
-import { handleGetCartProducts } from "./get-products";
 
-export const handleSelectProducts = (
+export const handleSelectProducts = async (
   cartProducts,
-  selectedRowKeys,
-  selectedRowKeysPrev,
+  newSelectedRowKeys,
+  currentSelectedRowKeys,
   setCartProducts,
   setTotal,
-  setSelectedRowKeys,
-  setSelectedRowKeysPrev
+  setSelectedRowKeys
 ) => {
-  const newlySelectedProducts = selectedRowKeys.filter(
-    (key) => !selectedRowKeysPrev.includes(key)
+  const newlySelectedProducts = newSelectedRowKeys.filter(
+    (key) => !currentSelectedRowKeys.includes(key)
   );
-  const newlyDeselectedProducts = selectedRowKeysPrev.filter(
-    (key) => !selectedRowKeys.includes(key)
+  const newlyDeselectedProducts = currentSelectedRowKeys.filter(
+    (key) => !newSelectedRowKeys.includes(key)
   );
 
   const selectedProducts = newlySelectedProducts.map((key) => {
@@ -35,29 +33,31 @@ export const handleSelectProducts = (
     };
   });
 
-  const updateSelection = async () => {
-    try {
-      if (selectedProducts.length !== 0) {
-        await handleSelectCartProductsAPI(selectedProducts);
-      } else if (deselectedProducts.length !== 0) {
-        await handleSelectCartProductsAPI(deselectedProducts);
-      }
-
-      // Only update selected states after successful update
-      setSelectedRowKeys(selectedRowKeys);
-      setSelectedRowKeysPrev(selectedRowKeys);
-
-      // Now fetch updated cart to sync with server
-      handleGetCartProducts(
-        setCartProducts,
-        setTotal,
-        setSelectedRowKeys,
-        setSelectedRowKeysPrev
-      );
-    } catch (error) {
-      console.log("Error updating selection: ", error);
+  try {
+    if (selectedProducts.length !== 0) {
+      await handleSelectCartProductsAPI(selectedProducts);
+    } else if (deselectedProducts.length !== 0) {
+      await handleSelectCartProductsAPI(deselectedProducts);
     }
-  };
 
-  updateSelection();
+    // Update cart products to reflect new selection state
+    const updatedCartProducts = cartProducts.map(product => {
+      if (newSelectedRowKeys.includes(product.product_id)) {
+        return { ...product, selected: true };
+      }
+      return { ...product, selected: false };
+    });
+
+    setCartProducts(updatedCartProducts);
+
+    // Calculate new total based on selected products
+    const newTotal = updatedCartProducts
+      .filter(product => newSelectedRowKeys.includes(product.product_id))
+      .reduce((sum, product) => sum + (product.price * product.quantity), 0);
+
+    setTotal(newTotal);
+  } catch (error) {
+    console.log("Error updating selection: ", error);
+    throw error; // Propagate error to parent component
+  }
 };

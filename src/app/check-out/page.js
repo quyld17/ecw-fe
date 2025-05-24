@@ -13,6 +13,7 @@ import {
 import { handleCreateOrderAPI } from "../../api/handlers/order";
 import { handleGetUserDetailsAPI } from "../../api/handlers/user";
 import { handleGetCartSelectedProductsAPI } from "../../api/handlers/cart";
+import cartEvents from "../../utils/events";
 
 import { Table, Radio, Space, Button, message } from "antd";
 
@@ -22,6 +23,7 @@ export default function CheckOut() {
   const [address, setAddress] = useState();
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [subTotal, setSubTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -61,18 +63,25 @@ export default function CheckOut() {
       });
   }, []);
 
-  const handlePlaceOrder = (paymentMethod) => {
-    handleCreateOrderAPI(paymentMethod)
-      .then((data) => {
-        if (data.message) {
-          message.error(data.message);
-        } else {
-          router.push("/check-out/complete");
-        }
-      })
-      .catch((error) => {
-        console.log("Place order unsuccessfully: ", error);
-      });
+  const handlePlaceOrder = async (paymentMethod) => {
+    try {
+      setIsLoading(true);
+      const data = await handleCreateOrderAPI(paymentMethod);
+      
+      if (data.message) {
+        message.error(data.message);
+      } else {
+        // Emit cart update event to refresh the cart count
+        cartEvents.emit();
+        message.success("Order placed successfully!");
+        router.push("/check-out/complete");
+      }
+    } catch (error) {
+      console.log("Place order unsuccessfully: ", error);
+      message.error("Failed to place order. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -166,6 +175,7 @@ export default function CheckOut() {
           <Button
             type="primary"
             onClick={() => handlePlaceOrder(paymentMethod)}
+            loading={isLoading}
             className={styles.placeOrderButton}
           >
             Place Order

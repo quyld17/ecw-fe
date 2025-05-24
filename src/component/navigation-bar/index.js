@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 
 import styles from "./styles.module.css";
 import { handleGetAllCartProductsAPI } from "../../api/handlers/cart";
+import cartEvents from "../../utils/events";
 
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { BiUserCircle } from "react-icons/bi";
@@ -20,6 +21,22 @@ export default function NavigationBar() {
   const [userEmail, setUserEmail] = useState("");
   const [cartProductsCount, setCartProductsCount] = useState(0);
   const router = useRouter();
+
+  const updateCartCount = () => {
+    if (token) {
+      handleGetAllCartProductsAPI()
+        .then((data) => {
+          // Only count products that haven't been deleted (quantity > 0)
+          const activeProducts = data.cart_products.filter(product => product.quantity > 0);
+          setCartProductsCount(activeProducts.length);
+        })
+        .catch((error) => {
+          console.log("Error updating cart count: ", error);
+        });
+    } else {
+      setCartProductsCount(0);
+    }
+  };
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -36,17 +53,21 @@ export default function NavigationBar() {
       } else {
         const userEmail = decodedToken.email;
         setUserEmail(userEmail);
+        updateCartCount();
       }
-      handleGetAllCartProductsAPI()
-        .then((data) => {
-          const cartProductsLength = data.cart_products.length;
-          setCartProductsCount(cartProductsLength);
-        })
-        .catch((error) => {
-          console.log("Error: ", error);
-        });
     }
   }, []);
+
+  // Subscribe to cart update events
+  useEffect(() => {
+    cartEvents.subscribe(updateCartCount);
+    return () => cartEvents.unsubscribe(updateCartCount);
+  }, [token]);
+
+  // Update cart count whenever the route changes
+  useEffect(() => {
+    updateCartCount();
+  }, [router.asPath, token]);
 
   const handleCartLogoClick = () => {
     if (!token) {
@@ -61,6 +82,7 @@ export default function NavigationBar() {
     localStorage.removeItem("token");
     setToken("");
     setUserEmail("");
+    setCartProductsCount(0);
     router.push("/");
     message.success("Sign out successfully!");
   };

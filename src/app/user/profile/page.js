@@ -11,7 +11,7 @@ import UserSideBar from "../../../component/user/side-bar/page";
 import NavigationBar from "../../../component/navigation-bar/index";
 import styles from "./styles.module.css";
 
-import { Form, Input, Select, DatePicker, Button, message } from "antd";
+import { Form, Input, Select, DatePicker, Button, message, Layout } from "antd";
 
 export default function PurchaseHistory() {
   const [user, setUser] = useState();
@@ -37,7 +37,7 @@ export default function PurchaseHistory() {
   }, []);
 
   return (
-    <div>
+    <Layout>
       <Head>
         <title>Account Profile</title>
       </Head>
@@ -156,6 +156,6 @@ export default function PurchaseHistory() {
           )}
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

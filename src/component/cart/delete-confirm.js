@@ -1,6 +1,6 @@
 import { handleDeleteCartProductAPI } from "../../api/handlers/cart";
-
 import { handleGetCartProducts } from "./get-products";
+import cartEvents from "../../utils/events";
 
 export const handleOk = (
   deletingProduct,
@@ -19,6 +19,8 @@ export const handleOk = (
           setSelectedRowKeys,
           setSelectedRowKeysPrev
         );
+        // Emit cart update event after successful deletion
+        cartEvents.emit();
       })
       .catch((error) => {
         console.log("Error: ", error);

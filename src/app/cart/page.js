@@ -23,7 +23,6 @@ export default function CartPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [selectedRowKeysPrev, setSelectedRowKeysPrev] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
 
   const [total, setTotal] = useState(0);
@@ -37,12 +36,7 @@ export default function CartPage() {
       return;
     }
 
-    handleGetCartProducts(
-      setCartProducts,
-      setTotal,
-      setSelectedRowKeys,
-      setSelectedRowKeysPrev
-    );
+    handleGetCartProducts(setCartProducts, setTotal, setSelectedRowKeys);
   }, []);
 
   const handleProductRedirect = (id, router) => {
@@ -57,9 +51,8 @@ export default function CartPage() {
       setCartProducts,
       setTotal,
       setSelectedRowKeys,
-      setSelectedRowKeysPrev,
-      setIsModalOpen,
-      setDeletingProduct
+      setDeletingProduct,
+      setIsModalOpen
     );
   };
 
@@ -69,20 +62,29 @@ export default function CartPage() {
     adjustedQuantityHandler
   );
 
-  const handleSelectedProducts = (selectedRowKeys) => {
-    handleSelectProducts(
-      cartProducts,
-      selectedRowKeys,
-      selectedRowKeysPrev,
-      setCartProducts,
-      setTotal,
-      setSelectedRowKeys,
-      setSelectedRowKeysPrev
-    );
+  const handleSelectedProducts = async (newSelectedRowKeys) => {
+    // Update UI state immediately
+    setSelectedRowKeys(newSelectedRowKeys);
+    
+    // Call API to update selection
+    try {
+      await handleSelectProducts(
+        cartProducts,
+        newSelectedRowKeys,
+        selectedRowKeys,
+        setCartProducts,
+        setTotal,
+        setSelectedRowKeys
+      );
+    } catch (error) {
+      // If API call fails, revert the selection
+      setSelectedRowKeys(selectedRowKeys);
+      messageApi.error('Failed to update selection');
+    }
   };
 
   const rowSelection = {
-    selectedRowKeys: selectedRowKeys,
+    selectedRowKeys,
     onChange: handleSelectedProducts,
   };
 
@@ -116,8 +118,7 @@ export default function CartPage() {
             setIsModalOpen,
             setCartProducts,
             setTotal,
-            setSelectedRowKeys,
-            setSelectedRowKeysPrev
+            setSelectedRowKeys
           )
         }
         onCancel={() => handleCancel(setIsModalOpen)}

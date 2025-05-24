@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { handleGetAllProductsAPI } from "../../api/handlers/products";
 import { handleAddToCartAPI } from "../../api/handlers/cart";
+import cartEvents from "../../utils/events";
 
 import styles from "./styles.module.css";
 import { Card, Button, message, Pagination } from "antd";
@@ -56,6 +57,8 @@ export default function ProductsDisplay() {
           type: "success",
           content: "Add product to cart successfully!",
         });
+        // Emit cart update event
+        cartEvents.emit();
       })
       .catch((error) => {
         messageApi.info(error);

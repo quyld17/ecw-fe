@@ -1,5 +1,6 @@
 import { handleAdjustCartProductQuantityAPI } from "../../api/handlers/cart";
 import { handleGetCartProducts } from "./get-products";
+import cartEvents from "../../utils/events";
 
 export function handleAdjustQuantity(
   id,
@@ -8,9 +9,8 @@ export function handleAdjustQuantity(
   setCartProducts,
   setTotal,
   setSelectedRowKeys,
-  setSelectedRowKeysPrev,
-  setIsModalOpen,
-  setDeletingProduct
+  setDeletingProduct,
+  setIsModalOpen
 ) {
   if (quantity === null) {
     return;
@@ -25,9 +25,10 @@ export function handleAdjustQuantity(
           handleGetCartProducts(
             setCartProducts,
             setTotal,
-            setSelectedRowKeys,
-            setSelectedRowKeysPrev
+            setSelectedRowKeys
           );
+          // Emit cart update event after successful quantity adjustment
+          cartEvents.emit();
         })
         .catch((error) => {
           console.log("Error: ", error);
