@@ -11,8 +11,12 @@
 }
 
 .searchBar {
-  max-width: 1000px;
-  margin-left: 50px;
+  width: 100%;
+  height: 40px;
+  margin-right: 0;
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
 }
 
 .cartLogo {
@@ -42,4 +46,42 @@
   font-size: 30px;
   width: 30px;
   height: 30px;
+}
+
+.searchDropdown {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  min-width: unset;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #eee;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 4px 0;
+}
+
+.searchResultItem {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 16px;
+}
+
+.searchResultItem:hover {
+  background: #f5f5f5;
+}
+
+.searchResultImage {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  margin-right: 12px;
+  border-radius: 4px;
+  background: #f0f0f0;
 }

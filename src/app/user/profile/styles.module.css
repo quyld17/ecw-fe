@@ -1,3 +1,7 @@
+.mainLayout {
+  background: #fff;
+}
+
 .content {
   width: 1200px;
   min-height: 70vh;
@@ -53,11 +57,6 @@
   display: flex;
   gap: 8px;
   align-items: center;
-}
-
-.defaultAddress {
-  background-color: #f0f7ff;
-  border-left: 4px solid #1890ff;
 }
 
 .addAddressButton {

@@ -500,7 +500,7 @@ export default function Profile() {
   ];
 
   return (
-    <Layout>
+    <Layout className={styles.mainLayout}>
       {contextHolder}
       <Head>
         <title>Account Profile</title>

@@ -31,3 +31,18 @@ export function handleGetProductDetailsAPI(product_id) {
     );
   });
 }
+
+export function handleSearchProductsAPI(query) {
+  return new Promise((resolve, reject) => {
+    const endpoint = `/products/search?q=${encodeURIComponent(query)}`;
+    getMethodAPI(
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
