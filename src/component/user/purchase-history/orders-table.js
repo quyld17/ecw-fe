@@ -3,28 +3,28 @@ import { Table, Badge } from "antd";
 
 export const columns = [
   {
-    title: <span style={{ fontSize: "25px" }}>Order ID</span>,
+    title: <span style={{ fontSize: "20px" }}>Order ID</span>,
     dataIndex: "orderID",
-    fontSize: "25px",
+    fontSize: "20px",
     align: "center",
   },
   {
-    title: "Order Date",
+    title: <span style={{ fontSize: "20px" }}>Order Date</span>,
     dataIndex: "orderDate",
     align: "center",
   },
   {
-    title: "Total Price",
+    title: <span style={{ fontSize: "20px" }}>Total Price</span>,
     dataIndex: "totalPrice",
     align: "center",
   },
   {
-    title: "Payment Method",
+    title: <span style={{ fontSize: "20px" }}>Payment Method</span>,
     dataIndex: "paymentMethod",
     align: "center",
   },
   {
-    title: "Delivery Status",
+    title: <span style={{ fontSize: "20px" }}>Delivery Status</span>,
     dataIndex: "deliveryStatus",
     align: "center",
   },
@@ -76,21 +76,21 @@ export const handleOrderProducts = (record, orders) => {
     {
       title: <span style={{ fontSize: "20px" }}>Products</span>,
       dataIndex: "product",
-      fontSize: "25px",
+      fontSize: "20px",
       width: "300px",
     },
     {
-      title: "Quantity",
+      title: <span style={{ fontSize: "20px" }}>Quantity</span>,
       dataIndex: "quantity",
       align: "center",
     },
     {
-      title: "Price",
+      title: <span style={{ fontSize: "20px" }}>Price</span>,
       dataIndex: "price",
       align: "center",
     },
     {
-      title: "Subtotal",
+      title: <span style={{ fontSize: "20px" }}>Subtotal</span>,
       dataIndex: "subtotal",
       align: "center",
     },

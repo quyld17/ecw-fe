@@ -75,7 +75,6 @@ export function handleGetAddressesAPI() {
 export function handleAddAddressAPI(addressDetails) {
   return new Promise((resolve, reject) => {
     const endpoint = "/addresses";
-    console.log(addressDetails);
     postMethodAPI(
       addressDetails,
       endpoint,
@@ -125,7 +124,6 @@ export function handleSetDefaultAddressAPI(addressID) {
 
 export function handleDeleteAddressAPI(addressID) {
   return new Promise((resolve, reject) => {
-    console.log(addressID);
     const endpoint = `/addresses/${addressID}`;
 
     deleteMethodAPI(

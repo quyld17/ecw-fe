@@ -14,7 +14,8 @@ import {
   handleAddAddressAPI,
   handleUpdateAddressAPI,
   handleSetDefaultAddressAPI,
-  handleDeleteAddressAPI
+  handleDeleteAddressAPI,
+  handleChangePasswordAPI
 } from "../../../api/handlers/user";
 
 import UserSideBar from "../../../component/user/side-bar/page";
@@ -35,7 +36,7 @@ import {
   List,
   Space
 } from "antd";
-import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { PlusOutlined, DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 
 // Add dayjs plugins
 dayjs.extend(customParseFormat);
@@ -53,6 +54,7 @@ export default function Profile() {
   const [form] = Form.useForm();
   const [addressForm] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const [changePasswordForm] = Form.useForm();
 
   const fetchAddresses = async () => {
     try {
@@ -165,21 +167,38 @@ export default function Profile() {
     }
   };
 
-  const handleDeleteAddress = async (addressId) => {
-    try {
-      await handleDeleteAddressAPI(addressId);
+  const handleDeleteAddress = async (addressId, isDefault) => {
+    if (isDefault) {
       messageApi.open({
-        type: "success",
-        content: "Address deleted successfully!",
+        type: "warning",
+        content: "The default address cannot be deleted. Please set another address as default before deleting this one.",
       });
-      await fetchAddresses();
-    } catch (error) {
-      console.error('Error deleting address:', error);
-      messageApi.open({
-        type: "error",
-        content: "Failed to delete address",
-      });
+      return;
     }
+    Modal.confirm({
+      title: 'Are you sure you want to delete this address?',
+      icon: <ExclamationCircleOutlined />,
+      content: 'This action cannot be undone.',
+      okText: 'Yes, delete it',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await handleDeleteAddressAPI(addressId);
+          messageApi.open({
+            type: "success",
+            content: "Address deleted successfully!",
+          });
+          await fetchAddresses();
+        } catch (error) {
+          console.error('Error deleting address:', error);
+          messageApi.open({
+            type: "error",
+            content: "Failed to delete address",
+          });
+        }
+      },
+    });
   };
 
   const handleSetDefaultAddress = async (addressId) => {
@@ -210,6 +229,65 @@ export default function Profile() {
       addressForm.resetFields();
     }
     setIsAddressModalVisible(true);
+  };
+
+  const credentialsValidate = (user, messageApi) => {
+    const formValidate = () => {
+      if (user.password === "") {
+        return "Current password must not be empty! Please try again";
+      } else if (user.new_password === "") {
+        return "New password must not be empty! Please try again";
+      } else if (user.confirm_password === "") {
+        return "Confirm password must not be empty! Please try again";
+      } else if (user.new_password !== user.confirm_password) {
+        return "Passwords not matched! Please try again";
+      } else if (user.password === user.new_password) {
+        return "New password must be different from current password! Please try again";
+      }
+      return null;
+    };
+
+    const validationError = formValidate();
+    if (validationError) {
+      messageApi.open({
+        type: "error",
+        content: validationError,
+      });
+      return true;
+    }
+    return false;
+  };
+
+  const handlePasswordChange = async (values) => {
+    if (!credentialsValidate(values, messageApi)) {
+      try {
+        const data = await handleChangePasswordAPI(values);
+        if (typeof data === "object") {
+          messageApi.open({
+            type: "error",
+            content: "Wrong password",
+          });
+        } else {
+          messageApi.open({
+            type: "success",
+            content: data,
+          });
+          changePasswordForm.resetFields();
+        }
+      } catch (error) {
+        if (typeof error === "object") {
+          messageApi.open({
+            type: "error",
+            content: error.message || "An error occurred.",
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            content: error,
+          });
+        }
+      }
+    }
   };
 
   const items = [
@@ -306,7 +384,7 @@ export default function Profile() {
                     <Button
                       icon={<DeleteOutlined />}
                       danger
-                      onClick={() => handleDeleteAddress(item.AddressID)}
+                      onClick={() => handleDeleteAddress(item.AddressID, item.IsDefault === 1)}
                     >
                       Delete
                     </Button>
@@ -361,6 +439,61 @@ export default function Profile() {
               </Form.Item>
             </Form>
           </Modal>
+        </div>
+      ),
+    },
+    {
+      key: '3',
+      label: 'Change Password',
+      children: (
+        <div>
+          <Form
+            form={changePasswordForm}
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 8 }}
+            layout="horizontal"
+            style={{ maxWidth: 1000 }}
+            onFinish={handlePasswordChange}
+            initialValues={{
+              password: "",
+              new_password: "",
+              confirm_password: ""
+            }}
+          >
+            <Form.Item 
+              label="Current password"
+              name="password"
+              rules={[{ required: true, message: 'Please input your current password!' }]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item 
+              label="New password" 
+              name="new_password"
+              rules={[{ required: true, message: 'Please input your new password!' }]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item 
+              label="Confirm password" 
+              name="confirm_password"
+              rules={[{ required: true, message: 'Please confirm your new password!' }]}
+            >
+              <Input.Password />
+            </Form.Item>
+            
+            <Form.Item wrapperCol={{ offset: 5, span: 8 }}>
+              <Button
+                className={styles.saveChangesButton}
+                type="primary"
+                htmlType="submit"
+              >
+                Change Password
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
       ),
     },

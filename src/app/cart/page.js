@@ -39,7 +39,7 @@ export default function CartPage() {
     handleGetCartProducts(setCartProducts, setTotal, setSelectedRowKeys);
   }, []);
 
-  const handleProductRedirect = (id, router) => {
+  const handleProductRedirect = (id) => {
     router.push(`/product/${id}`);
   };
 
@@ -63,10 +63,7 @@ export default function CartPage() {
   );
 
   const handleSelectedProducts = async (newSelectedRowKeys) => {
-    // Update UI state immediately
     setSelectedRowKeys(newSelectedRowKeys);
-    
-    // Call API to update selection
     try {
       await handleSelectProducts(
         cartProducts,
@@ -77,9 +74,11 @@ export default function CartPage() {
         setSelectedRowKeys
       );
     } catch (error) {
-      // If API call fails, revert the selection
       setSelectedRowKeys(selectedRowKeys);
-      messageApi.error('Failed to update selection');
+      messageApi.open({
+        type: "error",
+        content: "Failed to update selection",
+      });
     }
   };
 
@@ -88,7 +87,7 @@ export default function CartPage() {
     onChange: handleSelectedProducts,
   };
 
-  const handleCheckOut = (router, selectedRowKeys) => {
+  const handleCheckOut = (selectedRowKeys) => {
     if (selectedRowKeys.length === 0) {
       messageApi.open({
         type: "error",
@@ -152,7 +151,7 @@ export default function CartPage() {
             <Button
               className={styles.checkOutButton}
               type="primary"
-              onClick={() => handleCheckOut(router, selectedRowKeys)}
+              onClick={() => handleCheckOut(selectedRowKeys)}
             >
               Check Out
             </Button>

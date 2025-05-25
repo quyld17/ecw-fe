@@ -113,3 +113,16 @@
   width: 200px;
   height: 50px;
 }
+
+.selectAddressButton {
+  font-size: 16px;
+  height: 36px;
+  margin-top: 10px;
+}
+
+.addressInfo {
+  font-size: 15px;
+  word-break: break-word;
+  white-space: pre-line;
+  margin-bottom: 2px;
+}

@@ -19,15 +19,13 @@ export default function UserSideBar() {
   return (
     <div className={styles.sideBar}>
       <div className={styles.email}>{email}</div>
-      <div className={styles.profile}>
-        <Link href="/user/profile">Profile</Link>
-      </div>
-      <div className={styles.purchase}>
-        <Link href="/user/purchase-history">Purchase History</Link>
-      </div>
-      <div className={styles.changePassword}>
-        <Link href="/user/change-password">Change Password</Link>
-      </div>
+      <Link href="/user/profile">
+        <div className={styles.profile}>Profile</div>
+      </Link>
+      <div className={styles.sidebarDivider}></div>
+      <Link href="/user/purchase-history">
+        <div className={styles.purchase}>Purchase History</div>
+      </Link>
     </div>
   );
 }

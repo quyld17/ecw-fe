@@ -11,12 +11,18 @@ import {
   handleCheckOutData,
 } from "../../component/check-out/product-table";
 import { handleCreateOrderAPI } from "../../api/handlers/order";
-import { handleGetUserDetailsAPI } from "../../api/handlers/user";
+import { 
+  handleGetUserDetailsAPI, 
+  handleGetAddressesAPI, 
+  handleGetDefaultAddressAPI, 
+  handleUpdateAddressAPI, 
+  handleAddAddressAPI
+} from "../../api/handlers/user";
 import { handleGetCartSelectedProductsAPI } from "../../api/handlers/cart";
-import { handleGetDefaultAddressAPI } from "../../api/handlers/user";
 import cartEvents from "../../utils/events";
 
-import { Table, Radio, Space, Button, message } from "antd";
+import { Table, Radio, Space, Button, message, Modal, List, Form, Input } from "antd";
+import { PlusOutlined, EditOutlined } from "@ant-design/icons";
 
 export default function CheckOut() {
   const [checkOutData, setCheckOutData] = useState([]);
@@ -26,6 +32,11 @@ export default function CheckOut() {
   const [subTotal, setSubTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const [addresses, setAddresses] = useState([]);
+  const [showAddressSelect, setShowAddressSelect] = useState(false);
+  const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [addressForm] = Form.useForm();
 
   const router = useRouter();
 
@@ -58,17 +69,18 @@ export default function CheckOut() {
         console.log("Error getting check-out products' details:", error);
       });
 
-    // Fetch user info and default address in parallel
     Promise.all([
       handleGetUserDetailsAPI(),
-      handleGetDefaultAddressAPI()
+      handleGetDefaultAddressAPI(),
+      handleGetAddressesAPI()
     ])
-      .then(([userData, defaultAddressData]) => {
+      .then(([userData, defaultAddressData, addressesData]) => {
         setUserInfo(userData.user);
         setAddress(defaultAddressData);
+        setAddresses(addressesData || []);
       })
       .catch((error) => {
-        console.log("Error getting user or default address: ", error);
+        console.log("Error getting user, default address, or addresses: ", error);
       });
   }, []);
 
@@ -101,6 +113,51 @@ export default function CheckOut() {
     }
   };
 
+  const fetchAddresses = async () => {
+    try {
+      const addressesData = await handleGetAddressesAPI();
+      setAddresses(addressesData || []);
+    } catch (error) {
+      setAddresses([]);
+    }
+  };
+
+  const showAddressModal = (address = null) => {
+    setEditingAddress(address);
+    if (address) {
+      addressForm.setFieldsValue({
+        Name: address.Name || '',
+        Address: address.Address || '',
+      });
+    } else {
+      addressForm.resetFields();
+    }
+    setIsAddressModalVisible(true);
+  };
+
+  const handleAddOrUpdateAddress = async (values) => {
+    try {
+      let updatedAddress = null;
+      if (editingAddress) {
+        await handleUpdateAddressAPI(editingAddress.AddressID, values);
+        messageApi.open({ type: "success", content: "Address updated successfully!" });
+        updatedAddress = { ...editingAddress, ...values };
+      } else {
+        await handleAddAddressAPI(values);
+        messageApi.open({ type: "success", content: "Address added successfully!" });
+      }
+      setIsAddressModalVisible(false);
+      setEditingAddress(null);
+      addressForm.resetFields();
+      await fetchAddresses();
+      if (updatedAddress && address && address.AddressID === updatedAddress.AddressID) {
+        setAddress(updatedAddress);
+      }
+    } catch (error) {
+      messageApi.open({ type: "error", content: "Failed to save address" });
+    }
+  };
+
   return (
     <div className={styles.layout}>
       <Head>
@@ -122,14 +179,99 @@ export default function CheckOut() {
 
       <div className={styles.deliveryAddressField}>
         <p className={styles.deliveryAddressTitle}>Delivery Address</p>
-        <p>{userInfo && userInfo.full_name}</p>
-        <p>{userInfo && userInfo.phone_number}</p>
         {address && (
           <div>
-            <div style={{ fontWeight: 'bold', fontSize: '18px' }}>{address.Name}</div>
-            <div>{address.Address}</div>
+            <div className={styles.addressInfo} style={{ fontWeight: 'bold' }}>{address.Name}</div>
+            <div className={styles.addressInfo}>{address.Address}</div>
           </div>
         )}
+        <p className={styles.addressInfo}>{userInfo && userInfo.full_name}</p>
+        <p className={styles.addressInfo}>{userInfo && userInfo.phone_number}</p>
+        <Button
+          type="primary"
+          className={styles.selectAddressButton}
+          onClick={() => setShowAddressSelect(true)}
+        >
+          Change address
+        </Button>
+        <Modal
+          title="Select Delivery Address"
+          open={showAddressSelect}
+          onCancel={() => setShowAddressSelect(false)}
+          footer={null}
+        >
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => showAddressModal()}
+            style={{ marginBottom: 16 }}
+          >
+            Add New Address
+          </Button>
+          <List
+            dataSource={addresses}
+            renderItem={item => (
+              <List.Item
+                actions={[
+                  <Button
+                    icon={<EditOutlined />}
+                    onClick={() => showAddressModal(item)}
+                    key="edit"
+                  >
+                    Edit
+                  </Button>,
+                  <Button
+                    type={address && address.AddressID === item.AddressID ? "primary" : "default"}
+                    onClick={() => {
+                      setAddress(item);
+                      setShowAddressSelect(false);
+                    }}
+                    key="select"
+                  >
+                    {address && address.AddressID === item.AddressID ? "Selected" : "Select"}
+                  </Button>
+                ]}
+              >
+                <div>
+                  <div style={{ fontWeight: 'bold', fontSize: '16px' }}>{item.Name}</div>
+                  <div>{item.Address}</div>
+                  {item.IsDefault === 1 && <span style={{ color: 'green', marginLeft: 8 }}>(Default)</span>}
+                </div>
+              </List.Item>
+            )}
+          />
+          <Modal
+            title={editingAddress ? "Edit Address" : "Add New Address"}
+            open={isAddressModalVisible}
+            onOk={() => addressForm.submit()}
+            onCancel={() => {
+              setIsAddressModalVisible(false);
+              setEditingAddress(null);
+              addressForm.resetFields();
+            }}
+          >
+            <Form
+              form={addressForm}
+              layout="vertical"
+              onFinish={handleAddOrUpdateAddress}
+            >
+              <Form.Item
+                name="Name"
+                label="Address Name"
+                rules={[{ required: true, message: 'Please input address name!' }]}
+              >
+                <Input placeholder="e.g., Home, Office, etc." />
+              </Form.Item>
+              <Form.Item
+                name="Address"
+                label="Address"
+                rules={[{ required: true, message: 'Please input address!' }]}
+              >
+                <Input.TextArea rows={4} placeholder="Enter your full address" />
+              </Form.Item>
+            </Form>
+          </Modal>
+        </Modal>
       </div>
 
       <div className={styles.paymentField}>
