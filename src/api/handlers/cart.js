@@ -35,11 +35,12 @@ export function handleGetCartSelectedProductsAPI() {
   });
 }
 
-export function handleAddToCartAPI(product_id, quantity) {
+export function handleAddToCartAPI(product_id, quantity, size_id) {
   return new Promise((resolve, reject) => {
     const info = {
       product_id,
       quantity,
+      size_id,
     };
     const endpoint = "/cart-products";
 
@@ -57,14 +58,14 @@ export function handleAddToCartAPI(product_id, quantity) {
 }
 
 export function handleAdjustCartProductQuantityAPI(
-  product_id,
+  cart_product_id,
   quantity,
   selected
 ) {
   return new Promise((resolve, reject) => {
     const info = [
       {
-        product_id,
+        cart_product_id,
         quantity,
         selected,
       },
@@ -101,9 +102,9 @@ export function handleSelectCartProductsAPI(selectedProduct) {
   });
 }
 
-export function handleDeleteCartProductAPI(product_id) {
+export function handleDeleteCartProductAPI(cart_product_id) {
   return new Promise((resolve, reject) => {
-    const endpoint = `/cart-products/${product_id}`;
+    const endpoint = `/cart-products/${cart_product_id}`;
 
     deleteMethodAPI(
       endpoint,

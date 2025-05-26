@@ -79,3 +79,19 @@
 .quantityAvailable {
   font-size: 15px;
 }
+
+.sizeSelection {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.sizeTitle {
+  margin-right: 20px;
+  font-size: 20px;
+}
+
+.sizeList {
+  display: flex;
+  gap: 8px;
+}

@@ -16,6 +16,7 @@ export default function ProductPage({ params }) {
   const [productDetail, setProductDetail] = useState(null);
   const [imageURLs, setImageURLs] = useState([]);
   const [quantity, setQuantity] = useState(1);
+  const [selectedSizeIndex, setSelectedSizeIndex] = useState(0);
   const [messageApi, contextHolder] = message.useMessage();
   const { id: productID } = use(params);
 
@@ -26,7 +27,10 @@ export default function ProductPage({ params }) {
           setProductDetail(data);
         })
         .catch((error) => {
-          console.log("Error: ", error);
+          messageApi.open({
+            type: "error",
+            content: error.message == null ? error : error.message,
+          });
         });
     }
   }, [productID]);
@@ -52,12 +56,19 @@ export default function ProductPage({ params }) {
     }
   }, [productDetail]);
 
+  useEffect(() => {
+    setSelectedSizeIndex(0);
+  }, [productDetail]);
+
+  const selectedSize = productDetail?.product_sizes?.[selectedSizeIndex];
+
   const handleQuantitySelection = (value) => {
     setQuantity(value);
   };
 
-  const handleAddToCartClick = (id) => {
-    handleAddToCartAPI(id, quantity)
+  const handleAddToCartClick = () => {
+    if (!selectedSize) return;
+    handleAddToCartAPI(productDetail.product_detail.product_id, quantity, selectedSize.size_id)
       .then((data) => {
         if (data.error) {
           messageApi.open({
@@ -69,7 +80,6 @@ export default function ProductPage({ params }) {
             type: "success",
             content: "Add product to cart successfully!",
           });
-          // Emit cart update event
           cartEvents.emit();
         }
       })
@@ -135,12 +145,27 @@ export default function ProductPage({ params }) {
                   </p>
                 </div>
 
+                <div className={styles.sizeSelection}>
+                  <p className={styles.sizeTitle}>Size:</p>
+                  <div className={styles.sizeList}>
+                    {productDetail.product_sizes?.map((size, idx) => (
+                      <Button
+                        key={size.size_id}
+                        type={selectedSizeIndex === idx ? "primary" : "default"}
+                        onClick={() => setSelectedSizeIndex(idx)}
+                      >
+                        {size.size_name}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className={styles.quantitySelection}>
                   <p className={styles.quantityTitle}>Quantity: </p>
                   <div className={styles.quantityInput}>
                     <InputNumber
                       min={1}
-                      max={productDetail.product_detail.in_stock_quantity}
+                      max={selectedSize?.quantity || 1}
                       defaultValue={quantity}
                       value={quantity}
                       onChange={handleQuantitySelection}
@@ -148,19 +173,14 @@ export default function ProductPage({ params }) {
                   </div>
                   <span className={styles.quantityAvailable}>
                     {" "}
-                    {productDetail.product_detail.in_stock_quantity} pieces
-                    available
+                    {selectedSize?.quantity || 0} pieces available
                   </span>
                 </div>
 
                 <Button
                   type="primary"
                   size={"large"}
-                  onClick={() =>
-                    handleAddToCartClick(
-                      productDetail.product_detail.product_id
-                    )
-                  }
+                  onClick={handleAddToCartClick}
                 >
                   Add to cart
                 </Button>

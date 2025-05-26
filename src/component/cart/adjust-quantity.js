@@ -15,19 +15,18 @@ export function handleAdjustQuantity(
   if (quantity === null) {
     return;
   } else {
-    const product = cartProducts.find((product) => product.product_id === id);
+    const product = cartProducts.find((product) => product.cart_product_id === id);
     if (quantity <= 0) {
       setIsModalOpen(true);
       setDeletingProduct(product);
     } else {
-      handleAdjustCartProductQuantityAPI(id, quantity, product.selected)
+      handleAdjustCartProductQuantityAPI(product.cart_product_id, quantity, product.selected)
         .then(() => {
           handleGetCartProducts(
             setCartProducts,
             setTotal,
             setSelectedRowKeys
           );
-          // Emit cart update event after successful quantity adjustment
           cartEvents.emit();
         })
         .catch((error) => {

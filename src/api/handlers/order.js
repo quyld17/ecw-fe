@@ -1,10 +1,11 @@
 import postMethodAPI from "../methods/post-method-api";
 import getMethodAPI from "../methods/get-method-api";
 
-export function handleCreateOrderAPI(paymentMethod) {
+export function handleCreateOrderAPI(paymentMethod, address) {
   return new Promise((resolve, reject) => {
     const info = {
       payment_method: paymentMethod,
+      address: address
     };
     const endpoint = "/orders";
 

@@ -11,7 +11,7 @@ export const handleOk = (
   setSelectedRowKeysPrev
 ) => {
   if (deletingProduct) {
-    handleDeleteCartProductAPI(deletingProduct.product_id)
+    handleDeleteCartProductAPI(deletingProduct.cart_product_id)
       .then(() => {
         handleGetCartProducts(
           setCartProducts,
@@ -19,7 +19,6 @@ export const handleOk = (
           setSelectedRowKeys,
           setSelectedRowKeysPrev
         );
-        // Emit cart update event after successful deletion
         cartEvents.emit();
       })
       .catch((error) => {

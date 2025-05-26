@@ -37,6 +37,7 @@ export default function CheckOut() {
   const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [addressForm] = Form.useForm();
+  const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
 
   const router = useRouter();
 
@@ -66,7 +67,10 @@ export default function CheckOut() {
         setSubTotal(data.total_price);
       })
       .catch((error) => {
-        console.log("Error getting check-out products' details:", error);
+        messageApi.open({
+          type: "error",
+          content: "Error getting check-out products' details: " + error,
+        });
       });
 
     Promise.all([
@@ -80,14 +84,26 @@ export default function CheckOut() {
         setAddresses(addressesData || []);
       })
       .catch((error) => {
-        console.log("Error getting user, default address, or addresses: ", error);
       });
   }, []);
 
   const handlePlaceOrder = async (paymentMethod) => {
     try {
+      if (!address) {
+        messageApi.open({
+          type: "error",
+          content: "Please add a delivery address before placing your order.",
+        });
+        return;
+      }
+
+      if (!userInfo?.full_name || !userInfo?.phone_number) {
+        setIsProfileModalVisible(true);
+        return;
+      }
+
       setIsLoading(true);
-      const data = await handleCreateOrderAPI(paymentMethod);
+      const data = await handleCreateOrderAPI(paymentMethod, address.Address);
       
       if (data.message) {
         messageApi.open({
@@ -103,7 +119,6 @@ export default function CheckOut() {
         router.push("/check-out/complete");
       }
     } catch (error) {
-      console.log("Place order unsuccessfully: ", error);
       messageApi.open({
         type: "error",
         content: "Failed to place order. Please try again.",
@@ -143,18 +158,39 @@ export default function CheckOut() {
         messageApi.open({ type: "success", content: "Address updated successfully!" });
         updatedAddress = { ...editingAddress, ...values };
       } else {
-        await handleAddAddressAPI(values);
+        const response = await handleAddAddressAPI(values);
         messageApi.open({ type: "success", content: "Address added successfully!" });
+        
+        const addressesData = await handleGetAddressesAPI();
+        updatedAddress = addressesData.find(addr => 
+          addr.Name === values.Name && addr.Address === values.Address
+        );
       }
+
       setIsAddressModalVisible(false);
       setEditingAddress(null);
       addressForm.resetFields();
-      await fetchAddresses();
-      if (updatedAddress && address && address.AddressID === updatedAddress.AddressID) {
+
+      const addressesData = await handleGetAddressesAPI();
+      setAddresses(addressesData || []);
+
+      if (updatedAddress) {
         setAddress(updatedAddress);
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Address saved but failed to update display. Please refresh the page.",
+        });
+      }
+
+      if (!editingAddress) {
+        setShowAddressSelect(false);
       }
     } catch (error) {
-      messageApi.open({ type: "error", content: "Failed to save address" });
+      messageApi.open({ 
+        type: "error", 
+        content: "Failed to save address. Please try again." 
+      });
     }
   };
 
@@ -165,6 +201,32 @@ export default function CheckOut() {
       </Head>
       <NavigationBar />
       {contextHolder}
+
+      <Modal
+        title="Profile Update Required"
+        open={isProfileModalVisible}
+        onCancel={() => setIsProfileModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setIsProfileModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button
+            key="update"
+            type="primary"
+            onClick={() => router.push("/user/profile")}
+          >
+            Update now
+          </Button>
+        ]}
+      >
+        <p style={{ fontSize: '16px', marginBottom: '16px' }}>
+          Please update your profile with the following information before placing your order:
+        </p>
+        <ul style={{ color: '#ff4d4f', marginBottom: '16px' }}>
+          {!userInfo?.full_name && <li>Full Name</li>}
+          {!userInfo?.phone_number && <li>Phone Number</li>}
+        </ul>
+      </Modal>
 
       <div className={styles.productsField}>
         <Table
@@ -179,21 +241,41 @@ export default function CheckOut() {
 
       <div className={styles.deliveryAddressField}>
         <p className={styles.deliveryAddressTitle}>Delivery Address</p>
-        {address && (
+        {address ? (
+          <>
+            {address.Name && address.Address ? (
+              <div>
+                <p className={styles.addressInfo}>{userInfo && userInfo.full_name}</p>
+                <p className={styles.addressInfo}>{userInfo && userInfo.phone_number}</p>
+                <div className={styles.addressInfo} style={{ fontWeight: 'bold' }}>{address.Name}</div>
+                <div className={styles.addressInfo}>{address.Address}</div>
+              </div>
+            ) : (
+              <div className={styles.addressInfo}>Error: Invalid address format</div>
+            )}
+            
+            <Button
+              type="primary"
+              className={styles.selectAddressButton}
+              onClick={() => setShowAddressSelect(true)}
+            >
+              Change address
+            </Button>
+          </>
+        ) : (
           <div>
-            <div className={styles.addressInfo} style={{ fontWeight: 'bold' }}>{address.Name}</div>
-            <div className={styles.addressInfo}>{address.Address}</div>
+            <p className={styles.addressInfo}>No delivery address set</p>
+            <Button
+              type="primary"
+              className={styles.selectAddressButton}
+              onClick={() => showAddressModal()}
+            >
+              Add address
+            </Button>
           </div>
         )}
-        <p className={styles.addressInfo}>{userInfo && userInfo.full_name}</p>
-        <p className={styles.addressInfo}>{userInfo && userInfo.phone_number}</p>
-        <Button
-          type="primary"
-          className={styles.selectAddressButton}
-          onClick={() => setShowAddressSelect(true)}
-        >
-          Change address
-        </Button>
+
+        {/* Address Selection Modal */}
         <Modal
           title="Select Delivery Address"
           open={showAddressSelect}
@@ -208,69 +290,76 @@ export default function CheckOut() {
           >
             Add New Address
           </Button>
-          <List
-            dataSource={addresses}
-            renderItem={item => (
-              <List.Item
-                actions={[
-                  <Button
-                    icon={<EditOutlined />}
-                    onClick={() => showAddressModal(item)}
-                    key="edit"
-                  >
-                    Edit
-                  </Button>,
-                  <Button
-                    type={address && address.AddressID === item.AddressID ? "primary" : "default"}
-                    onClick={() => {
-                      setAddress(item);
-                      setShowAddressSelect(false);
-                    }}
-                    key="select"
-                  >
-                    {address && address.AddressID === item.AddressID ? "Selected" : "Select"}
-                  </Button>
-                ]}
-              >
-                <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '16px' }}>{item.Name}</div>
-                  <div>{item.Address}</div>
-                  {item.IsDefault === 1 && <span style={{ color: 'green', marginLeft: 8 }}>(Default)</span>}
-                </div>
-              </List.Item>
-            )}
-          />
-          <Modal
-            title={editingAddress ? "Edit Address" : "Add New Address"}
-            open={isAddressModalVisible}
-            onOk={() => addressForm.submit()}
-            onCancel={() => {
-              setIsAddressModalVisible(false);
-              setEditingAddress(null);
-              addressForm.resetFields();
-            }}
+          {addresses.length > 0 ? (
+            <List
+              dataSource={addresses}
+              renderItem={item => (
+                <List.Item
+                  actions={[
+                    <Button
+                      icon={<EditOutlined />}
+                      onClick={() => showAddressModal(item)}
+                      key="edit"
+                    >
+                      Edit
+                    </Button>,
+                    <Button
+                      type={address && address.AddressID === item.AddressID ? "primary" : "default"}
+                      onClick={() => {
+                        setAddress(item);
+                        setShowAddressSelect(false);
+                      }}
+                      key="select"
+                    >
+                      {address && address.AddressID === item.AddressID ? "Selected" : "Select"}
+                    </Button>
+                  ]}
+                >
+                  <div>
+                    <div style={{ fontWeight: 'bold', fontSize: '16px' }}>{item.Name}</div>
+                    <div>{item.Address}</div>
+                    {item.IsDefault === 1 && <span style={{ color: 'green', marginLeft: 8 }}>(Default)</span>}
+                  </div>
+                </List.Item>
+              )}
+            />
+          ) : (
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <p>No addresses found. Please add a new address.</p>
+            </div>
+          )}
+        </Modal>
+
+        <Modal
+          title={editingAddress ? "Edit Address" : "Add New Address"}
+          open={isAddressModalVisible}
+          onOk={() => addressForm.submit()}
+          onCancel={() => {
+            setIsAddressModalVisible(false);
+            setEditingAddress(null);
+            addressForm.resetFields();
+          }}
+        >
+          <Form
+            form={addressForm}
+            layout="vertical"
+            onFinish={handleAddOrUpdateAddress}
           >
-            <Form
-              form={addressForm}
-              layout="vertical"
-              onFinish={handleAddOrUpdateAddress}
+            <Form.Item
+              name="Name"
+              label="Address Name"
+              rules={[{ required: true, message: 'Please input address name!' }]}
             >
-              <Form.Item
-                name="Name"
-                label="Address Name"
-                rules={[{ required: true, message: 'Please input address name!' }]}
-              >
-                <Input placeholder="e.g., Home, Office, etc." />
-              </Form.Item>
-              <Form.Item
-                name="Address"
-                label="Address"
-                rules={[{ required: true, message: 'Please input address!' }]}
-              >
-                <Input.TextArea rows={4} placeholder="Enter your full address" />
-              </Form.Item>
-            </Form>
-          </Modal>
+              <Input placeholder="e.g., Home, Office, etc." />
+            </Form.Item>
+            <Form.Item
+              name="Address"
+              label="Address"
+              rules={[{ required: true, message: 'Please input address!' }]}
+            >
+              <Input.TextArea rows={4} placeholder="Enter your full address" />
+            </Form.Item>
+          </Form>
         </Modal>
       </div>
 

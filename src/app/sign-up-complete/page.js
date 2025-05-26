@@ -1,12 +1,15 @@
+"use client";
+
 import React from "react";
-import { Link, Head } from "next";
+import Link from "next/link";
+import Head from "next/head";
 
 import styles from "./styles.module.css";
 
 import { Layout } from "antd";
 const { Content, Header } = Layout;
 
-export default function SignUpPage() {
+export default function SignUpCompletePage() {
   return (
     <Layout>
       <Head>
@@ -30,7 +33,7 @@ export default function SignUpPage() {
             to sign in
           </p>
           <p>
-            or back to{" "}
+            or go back to{" "}
             <Link href="/" className={styles.redirect}>
               homepage
             </Link>

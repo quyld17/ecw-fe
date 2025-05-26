@@ -8,6 +8,11 @@ export const cartColumns = [
     width: "400px",
   },
   {
+    title: "Size",
+    dataIndex: "size",
+    align: "center",
+  },
+  {
     title: "Unit Price",
     dataIndex: "unitPrice",
     align: "center",
@@ -17,11 +22,11 @@ export const cartColumns = [
     dataIndex: "quantityDisplay",
     align: "center",
   },
-  {
-    title: "Total Price",
-    dataIndex: "totalPrice",
-    align: "center",
-  },
+  // {
+  //   title: "Total Price",
+  //   dataIndex: "totalPrice",
+  //   align: "center",
+  // },
   {
     title: "Action",
     dataIndex: "action",
@@ -40,7 +45,7 @@ export const cartData = (
     return data;
   }
   data = cartProducts.map((product) => ({
-    key: product.product_id,
+    key: product.cart_product_id,
     product: (
       <div className={styles.productThumbnailAndName}>
         <img
@@ -57,6 +62,7 @@ export const cartData = (
         </span>
       </div>
     ),
+    size: product.size_name,
     price: product.price,
     unitPrice: Intl.NumberFormat("vi-VI", {
       style: "currency",
@@ -66,11 +72,11 @@ export const cartData = (
     quantityDisplay: (
       <InputNumber
         min={0}
-        max={product.in_stock_quantity}
+        max={product.size_quantity}
         defaultValue={product.quantity}
         value={product.quantity}
         onChange={(quantity) =>
-          adjustedQuantityHandler(product.product_id, quantity)
+          adjustedQuantityHandler(product.cart_product_id, quantity)
         }
       />
     ),
@@ -82,7 +88,7 @@ export const cartData = (
       <Space size="middle">
         <a
           className={styles.deleteButton}
-          onClick={() => adjustedQuantityHandler(product.product_id, 0)}
+          onClick={() => adjustedQuantityHandler(product.cart_product_id, 0)}
         >
           Delete
         </a>

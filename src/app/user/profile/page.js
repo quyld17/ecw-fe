@@ -38,7 +38,6 @@ import {
 } from "antd";
 import { PlusOutlined, DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 
-// Add dayjs plugins
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 

@@ -2,8 +2,14 @@ export const checkOutColumns = [
   {
     title: <span style={{ fontSize: "25px" }}>Products</span>,
     dataIndex: "product",
-    width: "500px",
+    width: "400px",
     fontSize: "25px",
+  },
+  {
+    title: "Size",
+    dataIndex: "size",
+    align: "center",
+    width: "100px",
   },
   {
     title: "Unit Price",
@@ -35,6 +41,7 @@ export const handleCheckOutData = (checkOutData) => {
         <span>{product.product_name}</span>
       </div>
     ),
+    size: product.size_name,
     price: product.price,
     unitPrice: Intl.NumberFormat("vi-VI", {
       style: "currency",

@@ -32,7 +32,10 @@ export default function SignInPage() {
           router.push("/");
         })
         .catch((error) => {
-          console.log("Error getting delivery address: ", error);
+          messageApi.open({
+            type: "error",
+            content: error,
+          });
         });
     }
   };
