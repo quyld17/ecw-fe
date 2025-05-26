@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { handleGetAllProductsAPI } from "../../api/handlers/products";
-import { handleAddToCartAPI } from "../../api/handlers/cart";
-import cartEvents from "../../utils/events";
 
 import styles from "./styles.module.css";
-import { Card, Button, message, Pagination } from "antd";
+import { Card, message, Pagination } from "antd";
 const { Meta } = Card;
 
 export default function ProductsDisplay() {
@@ -16,62 +14,42 @@ export default function ProductsDisplay() {
   const [numOfProds, setNumOfProds] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
-  const [messageApi, contextHolder] = message.useMessage();
-
-  // useEffect(() => {
-  // Ensure that the router query is available on the client side
-  if (router.query && router.query.page) {
-    setCurrentPage(parseInt(router.query.page) || 1);
-  }
-  // }, [router.query]);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     setToken(storedToken);
 
-    handleGetAllProductsAPI(currentPage)
+    const page = searchParams.get('page') || 1;
+    const sort = searchParams.get('sort') || '';
+    const category = searchParams.get('category') || '';
+    setCurrentPage(parseInt(page));
+
+    handleGetAllProductsAPI(page, sort, category)
       .then((data) => {
         setProducts(data.products);
         setNumOfProds(data.num_of_prods);
       })
       .catch((error) => {
-        console.log("Error getting delivery address: ", error);
+        console.log("Error getting products: ", error);
       });
-  }, [currentPage]);
+  }, [searchParams]);
 
   const handleClick = (id) => {
     router.push(`/product/${id}`);
   };
 
-  const handleAddToCartClick = (event, id) => {
-    event.stopPropagation();
-
-    if (token === null) {
-      messageApi.info("Please sign in to continue");
-      return;
-    }
-
-    handleAddToCartAPI(id, 1)
-      .then(() => {
-        messageApi.open({
-          type: "success",
-          content: "Add product to cart successfully!",
-        });
-        // Emit cart update event
-        cartEvents.emit();
-      })
-      .catch((error) => {
-        messageApi.info(error);
-      });
-  };
-
   const handlePageChange = (page) => {
-    router.push(`?page=${page}`);
+    const currentSort = searchParams.get('sort') || '';
+    const currentCategory = searchParams.get('category') || '';
+    let url = `?page=${page}`;
+    if (currentSort) url += `&sort=${currentSort}`;
+    if (currentCategory) url += `&category=${currentCategory}`;
+    router.push(url);
   };
 
   return (
     <div>
-      {contextHolder}
       <div className={styles.overall}>
         {products.map((product) => (
           <Card
@@ -84,34 +62,27 @@ export default function ProductsDisplay() {
             <Meta
               title={product.product_name}
               description={
-                <div>
+                <div className={styles.price}>
                   Price:{" "}
                   {Intl.NumberFormat("vi-VI", {
                     style: "currency",
                     currency: "VND",
                   }).format(product.price)}
-                  <Button
-                    type="primary"
-                    className={styles.addToCartButton}
-                    onClick={(event) =>
-                      handleAddToCartClick(event, product.product_id)
-                    }
-                  >
-                    Add to cart
-                  </Button>
                 </div>
               }
             ></Meta>
           </Card>
         ))}
       </div>
-      <Pagination
-        defaultCurrent={1}
-        pageSize={5}
-        total={numOfProds}
-        current={currentPage}
-        onChange={handlePageChange}
-      />
+      <div className={styles.paginationContainer}>
+        <Pagination
+          defaultCurrent={1}
+          pageSize={5}
+          total={numOfProds}
+          current={currentPage}
+          onChange={handlePageChange}
+        />
+      </div>
     </div>
   );
 }

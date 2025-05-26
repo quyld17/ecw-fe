@@ -10,9 +10,9 @@ import { handleGetAllCartProductsAPI } from "../../api/handlers/cart";
 import { handleSearchProductsAPI } from "../../api/handlers/products";
 import cartEvents from "../../utils/events";
 
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, ShopOutlined } from "@ant-design/icons";
 import { BiUserCircle } from "react-icons/bi";
-import { Input, Layout, Dropdown, Badge, message, Spin } from "antd";
+import { Input, Layout, Dropdown, Badge, message} from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 const { Search } = Input;
@@ -136,7 +136,7 @@ export default function NavigationBar() {
     <Header className={styles.header}>
       {contextHolder}
       <div className={styles.websiteLogo}>
-        <Link href="/">Logo</Link>
+        <Link href="/"><ShopOutlined style={{ fontSize: 40 }} /></Link>
       </div>
 
       <div style={{ position: "relative", width: "600px" }}>
@@ -214,7 +214,7 @@ export default function NavigationBar() {
           trigger={["click", "hover"]}
           placement="bottom"
         >
-          <p className={styles.userEmail}>{userEmail}</p>
+          <p className={styles.userEmail} style={{ fontSize: 20 }}>{userEmail}</p>
         </Dropdown>
       ) : (
         <Dropdown menu={{ items }} trigger={["click"]} placement="bottom">

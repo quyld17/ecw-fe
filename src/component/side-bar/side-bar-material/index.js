@@ -24,36 +24,6 @@ export default function SideBarMaterials() {
     };
   }
 
-  // const sortingItems = [
-  //   {
-  //     label: "Sorted by",
-  //     key: "sub1",
-  //     icon: <TbArrowsSort style={{ fontSize: "20px" }} />,
-  //     items: [
-  //       {
-  //         label: "Price: High-Low",
-  //         key: 1,
-  //         icon: <BsSortDown />,
-  //       },
-  //       {
-  //         label: "Price: Low-High",
-  //         key: 2,
-  //         icon: <BsSortUp />,
-  //       },
-  //       {
-  //         label: "Name: A-Z",
-  //         key: 3,
-  //         icon: <BsSortAlphaDown />,
-  //       },
-  //       {
-  //         label: "Name: Z-A",
-  //         key: 4,
-  //         icon: <BsSortAlphaUp />,
-  //       },
-  //     ],
-  //   },
-  // ];
-
   const sortingItems = [
     getItem(
       "Sorted by",
@@ -68,13 +38,13 @@ export default function SideBarMaterials() {
     ),
   ];
 
-  const categoryItems = [
-    getItem(
-      "Category",
-      "sub2",
-      <TbCategory style={{ fontSize: "20px" }} />,
-      categories.map((cat, index) => getItem(cat.category_name, index + 5))
-    ),
-  ];
-  return { sortingItems, categoryItems };
+  // const categoryItems = [
+  //   getItem(
+  //     "Category",
+  //     "sub2",
+  //     <TbCategory style={{ fontSize: "20px" }} />,
+  //     categories.map((cat, index) => getItem(cat.category_name, index + 5))
+  //   ),
+  // ];
+  return { sortingItems };
 }

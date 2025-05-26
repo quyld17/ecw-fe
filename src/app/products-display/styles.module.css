@@ -14,3 +14,17 @@
 .addToCartButton {
   margin-top: 20px;
 }
+
+.price {
+  color: #1976bd;
+  font-weight: bold;
+}
+
+.paginationContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding-bottom: 20px;
+  padding-right: 10px;
+  z-index: 100;
+}
