@@ -5,7 +5,7 @@ export function handleCreateOrderAPI(paymentMethod, address) {
   return new Promise((resolve, reject) => {
     const info = {
       payment_method: paymentMethod,
-      address: address
+      address: address,
     };
     const endpoint = "/orders";
 

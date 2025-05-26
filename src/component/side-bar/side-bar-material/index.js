@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import handleGetAllCategoriesAPI from "../../../api/handlers/categories";
-import { TbCategory, TbArrowsSort } from "react-icons/tb";
+import { TbArrowsSort } from "react-icons/tb";
 import {
   BsSortUp,
   BsSortDown,
@@ -38,13 +38,5 @@ export default function SideBarMaterials() {
     ),
   ];
 
-  // const categoryItems = [
-  //   getItem(
-  //     "Category",
-  //     "sub2",
-  //     <TbCategory style={{ fontSize: "20px" }} />,
-  //     categories.map((cat, index) => getItem(cat.category_name, index + 5))
-  //   ),
-  // ];
   return { sortingItems };
 }

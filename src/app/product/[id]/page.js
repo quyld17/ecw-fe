@@ -68,7 +68,11 @@ export default function ProductPage({ params }) {
 
   const handleAddToCartClick = () => {
     if (!selectedSize) return;
-    handleAddToCartAPI(productDetail.product_detail.product_id, quantity, selectedSize.size_id)
+    handleAddToCartAPI(
+      productDetail.product_detail.product_id,
+      quantity,
+      selectedSize.size_id
+    )
       .then((data) => {
         if (data.error) {
           messageApi.open({

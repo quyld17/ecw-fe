@@ -99,7 +99,7 @@ export function handleUpdateAddressAPI(addressID, addressDetails) {
         resolve(data);
       },
       (error) => {
-        reject(error); 
+        reject(error);
       }
     );
   });

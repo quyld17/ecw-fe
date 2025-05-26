@@ -10,29 +10,27 @@ export default function SideBar() {
   const searchParams = useSearchParams();
 
   const handleMenuClick = ({ key }) => {
-    const currentPage = searchParams.get('page') || 1;
-    
-    // Handle sorting
+    const currentPage = searchParams.get("page") || 1;
+
     if (key >= 1 && key <= 4) {
-      let sort = '';
+      let sort = "";
       switch (parseInt(key)) {
-        case 1: // Price High-Low
-          sort = 'price_desc';
+        case 1:
+          sort = "price_desc";
           break;
-        case 2: // Price Low-High
-          sort = 'price_asc';
+        case 2:
+          sort = "price_asc";
           break;
-        case 3: // Name A-Z
-          sort = 'name_asc';
+        case 3:
+          sort = "name_asc";
           break;
-        case 4: // Name Z-A
-          sort = 'name_desc';
+        case 4:
+          sort = "name_desc";
           break;
       }
       router.push(`/?page=${currentPage}&sort=${sort}`);
     }
-    
-    // Handle categories (key >= 5)
+
     if (key >= 5) {
       router.push(`/?page=${currentPage}&category=${key - 4}`);
     }
@@ -57,9 +55,7 @@ export default function SideBar() {
     });
   };
 
-  const menuItems = [
-    ...renderMenuItems(sortingItems),
-  ];
+  const menuItems = [...renderMenuItems(sortingItems)];
 
   return (
     <Sider

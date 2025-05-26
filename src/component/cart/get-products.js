@@ -9,10 +9,12 @@ export const handleGetCartProducts = (
     .then((data) => {
       setCartProducts(data.cart_products);
       setTotal(data.total_price);
-      
+
       const selectedKeys = data.cart_products
-        .filter(product => product.selected === true || product.selected === 1)
-        .map(product => product.cart_product_id);
+        .filter(
+          (product) => product.selected === true || product.selected === 1
+        )
+        .map((product) => product.cart_product_id);
       setSelectedRowKeys(selectedKeys);
     })
     .catch((error) => {

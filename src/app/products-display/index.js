@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { handleGetAllProductsAPI } from "../../api/handlers/products";
 
 import styles from "./styles.module.css";
-import { Card, message, Pagination } from "antd";
+import { Card, Pagination } from "antd";
 const { Meta } = Card;
 
 export default function ProductsDisplay() {
@@ -20,9 +20,9 @@ export default function ProductsDisplay() {
     const storedToken = localStorage.getItem("token");
     setToken(storedToken);
 
-    const page = searchParams.get('page') || 1;
-    const sort = searchParams.get('sort') || '';
-    const category = searchParams.get('category') || '';
+    const page = searchParams.get("page") || 1;
+    const sort = searchParams.get("sort") || "";
+    const category = searchParams.get("category") || "";
     setCurrentPage(parseInt(page));
 
     handleGetAllProductsAPI(page, sort, category)
@@ -40,8 +40,8 @@ export default function ProductsDisplay() {
   };
 
   const handlePageChange = (page) => {
-    const currentSort = searchParams.get('sort') || '';
-    const currentCategory = searchParams.get('category') || '';
+    const currentSort = searchParams.get("sort") || "";
+    const currentCategory = searchParams.get("category") || "";
     let url = `?page=${page}`;
     if (currentSort) url += `&sort=${currentSort}`;
     if (currentCategory) url += `&category=${currentCategory}`;

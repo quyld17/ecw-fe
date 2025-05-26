@@ -11,17 +11,27 @@ import {
   handleCheckOutData,
 } from "../../component/check-out/product-table";
 import { handleCreateOrderAPI } from "../../api/handlers/order";
-import { 
-  handleGetUserDetailsAPI, 
-  handleGetAddressesAPI, 
-  handleGetDefaultAddressAPI, 
-  handleUpdateAddressAPI, 
-  handleAddAddressAPI
+import {
+  handleGetUserDetailsAPI,
+  handleGetAddressesAPI,
+  handleGetDefaultAddressAPI,
+  handleUpdateAddressAPI,
+  handleAddAddressAPI,
 } from "../../api/handlers/user";
 import { handleGetCartSelectedProductsAPI } from "../../api/handlers/cart";
 import cartEvents from "../../utils/events";
 
-import { Table, Radio, Space, Button, message, Modal, List, Form, Input } from "antd";
+import {
+  Table,
+  Radio,
+  Space,
+  Button,
+  message,
+  Modal,
+  List,
+  Form,
+  Input,
+} from "antd";
 import { PlusOutlined, EditOutlined } from "@ant-design/icons";
 
 export default function CheckOut() {
@@ -76,15 +86,14 @@ export default function CheckOut() {
     Promise.all([
       handleGetUserDetailsAPI(),
       handleGetDefaultAddressAPI(),
-      handleGetAddressesAPI()
+      handleGetAddressesAPI(),
     ])
       .then(([userData, defaultAddressData, addressesData]) => {
         setUserInfo(userData.user);
         setAddress(defaultAddressData);
         setAddresses(addressesData || []);
       })
-      .catch((error) => {
-      });
+      .catch((error) => {});
   }, []);
 
   const handlePlaceOrder = async (paymentMethod) => {
@@ -104,7 +113,7 @@ export default function CheckOut() {
 
       setIsLoading(true);
       const data = await handleCreateOrderAPI(paymentMethod, address.Address);
-      
+
       if (data.message) {
         messageApi.open({
           type: "error",
@@ -141,8 +150,8 @@ export default function CheckOut() {
     setEditingAddress(address);
     if (address) {
       addressForm.setFieldsValue({
-        Name: address.Name || '',
-        Address: address.Address || '',
+        Name: address.Name || "",
+        Address: address.Address || "",
       });
     } else {
       addressForm.resetFields();
@@ -155,15 +164,21 @@ export default function CheckOut() {
       let updatedAddress = null;
       if (editingAddress) {
         await handleUpdateAddressAPI(editingAddress.AddressID, values);
-        messageApi.open({ type: "success", content: "Address updated successfully!" });
+        messageApi.open({
+          type: "success",
+          content: "Address updated successfully!",
+        });
         updatedAddress = { ...editingAddress, ...values };
       } else {
         const response = await handleAddAddressAPI(values);
-        messageApi.open({ type: "success", content: "Address added successfully!" });
-        
+        messageApi.open({
+          type: "success",
+          content: "Address added successfully!",
+        });
+
         const addressesData = await handleGetAddressesAPI();
-        updatedAddress = addressesData.find(addr => 
-          addr.Name === values.Name && addr.Address === values.Address
+        updatedAddress = addressesData.find(
+          (addr) => addr.Name === values.Name && addr.Address === values.Address
         );
       }
 
@@ -179,7 +194,8 @@ export default function CheckOut() {
       } else {
         messageApi.open({
           type: "error",
-          content: "Address saved but failed to update display. Please refresh the page.",
+          content:
+            "Address saved but failed to update display. Please refresh the page.",
         });
       }
 
@@ -187,9 +203,9 @@ export default function CheckOut() {
         setShowAddressSelect(false);
       }
     } catch (error) {
-      messageApi.open({ 
-        type: "error", 
-        content: "Failed to save address. Please try again." 
+      messageApi.open({
+        type: "error",
+        content: "Failed to save address. Please try again.",
       });
     }
   };
@@ -216,13 +232,14 @@ export default function CheckOut() {
             onClick={() => router.push("/user/profile")}
           >
             Update now
-          </Button>
+          </Button>,
         ]}
       >
-        <p style={{ fontSize: '16px', marginBottom: '16px' }}>
-          Please update your profile with the following information before placing your order:
+        <p style={{ fontSize: "16px", marginBottom: "16px" }}>
+          Please update your profile with the following information before
+          placing your order:
         </p>
-        <ul style={{ color: '#ff4d4f', marginBottom: '16px' }}>
+        <ul style={{ color: "#ff4d4f", marginBottom: "16px" }}>
           {!userInfo?.full_name && <li>Full Name</li>}
           {!userInfo?.phone_number && <li>Phone Number</li>}
         </ul>
@@ -245,15 +262,26 @@ export default function CheckOut() {
           <>
             {address.Name && address.Address ? (
               <div>
-                <p className={styles.addressInfo}>{userInfo && userInfo.full_name}</p>
-                <p className={styles.addressInfo}>{userInfo && userInfo.phone_number}</p>
-                <div className={styles.addressInfo} style={{ fontWeight: 'bold' }}>{address.Name}</div>
+                <p className={styles.addressInfo}>
+                  {userInfo && userInfo.full_name}
+                </p>
+                <p className={styles.addressInfo}>
+                  {userInfo && userInfo.phone_number}
+                </p>
+                <div
+                  className={styles.addressInfo}
+                  style={{ fontWeight: "bold" }}
+                >
+                  {address.Name}
+                </div>
                 <div className={styles.addressInfo}>{address.Address}</div>
               </div>
             ) : (
-              <div className={styles.addressInfo}>Error: Invalid address format</div>
+              <div className={styles.addressInfo}>
+                Error: Invalid address format
+              </div>
             )}
-            
+
             <Button
               type="primary"
               className={styles.selectAddressButton}
@@ -293,7 +321,7 @@ export default function CheckOut() {
           {addresses.length > 0 ? (
             <List
               dataSource={addresses}
-              renderItem={item => (
+              renderItem={(item) => (
                 <List.Item
                   actions={[
                     <Button
@@ -304,27 +332,39 @@ export default function CheckOut() {
                       Edit
                     </Button>,
                     <Button
-                      type={address && address.AddressID === item.AddressID ? "primary" : "default"}
+                      type={
+                        address && address.AddressID === item.AddressID
+                          ? "primary"
+                          : "default"
+                      }
                       onClick={() => {
                         setAddress(item);
                         setShowAddressSelect(false);
                       }}
                       key="select"
                     >
-                      {address && address.AddressID === item.AddressID ? "Selected" : "Select"}
-                    </Button>
+                      {address && address.AddressID === item.AddressID
+                        ? "Selected"
+                        : "Select"}
+                    </Button>,
                   ]}
                 >
                   <div>
-                    <div style={{ fontWeight: 'bold', fontSize: '16px' }}>{item.Name}</div>
+                    <div style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      {item.Name}
+                    </div>
                     <div>{item.Address}</div>
-                    {item.IsDefault === 1 && <span style={{ color: 'green', marginLeft: 8 }}>(Default)</span>}
+                    {item.IsDefault === 1 && (
+                      <span style={{ color: "green", marginLeft: 8 }}>
+                        (Default)
+                      </span>
+                    )}
                   </div>
                 </List.Item>
               )}
             />
           ) : (
-            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+            <div style={{ textAlign: "center", padding: "20px 0" }}>
               <p>No addresses found. Please add a new address.</p>
             </div>
           )}
@@ -348,14 +388,16 @@ export default function CheckOut() {
             <Form.Item
               name="Name"
               label="Address Name"
-              rules={[{ required: true, message: 'Please input address name!' }]}
+              rules={[
+                { required: true, message: "Please input address name!" },
+              ]}
             >
               <Input placeholder="e.g., Home, Office, etc." />
             </Form.Item>
             <Form.Item
               name="Address"
               label="Address"
-              rules={[{ required: true, message: 'Please input address!' }]}
+              rules={[{ required: true, message: "Please input address!" }]}
             >
               <Input.TextArea rows={4} placeholder="Enter your full address" />
             </Form.Item>

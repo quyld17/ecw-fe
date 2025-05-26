@@ -7,36 +7,41 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
 
-import { 
-  handleGetUserDetailsAPI, 
+import {
+  handleGetUserDetailsAPI,
   handleUpdateUserDetailsAPI,
   handleGetAddressesAPI,
   handleAddAddressAPI,
   handleUpdateAddressAPI,
   handleSetDefaultAddressAPI,
   handleDeleteAddressAPI,
-  handleChangePasswordAPI
+  handleChangePasswordAPI,
 } from "../../../api/handlers/user";
 
 import UserSideBar from "../../../component/user/side-bar/page";
 import NavigationBar from "../../../component/navigation-bar/index";
 import styles from "./styles.module.css";
 
-import { 
-  Form, 
-  Input, 
-  Select, 
-  DatePicker, 
-  Button, 
-  message, 
-  Layout, 
+import {
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Button,
+  message,
+  Layout,
   Tabs,
   Modal,
   Checkbox,
   List,
-  Space
+  Space,
 } from "antd";
-import { PlusOutlined, DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
@@ -46,7 +51,7 @@ export default function Profile() {
   const [addresses, setAddresses] = useState([]);
   const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
-  const [activeTab, setActiveTab] = useState('1');
+  const [activeTab, setActiveTab] = useState("1");
   const router = useRouter();
   const dateFormat = "YYYY-MM-DD";
   const backendDateFormat = "YYYY-MM-DDTHH:mm:ssZ";
@@ -69,7 +74,7 @@ export default function Profile() {
         setAddresses([]);
       }
     } catch (error) {
-      console.error('Error fetching addresses:', error);
+      console.error("Error fetching addresses:", error);
       setAddresses([]);
     }
   };
@@ -89,15 +94,18 @@ export default function Profile() {
           dateOfBirth = dayjs(data.user.date_of_birth_string);
           if (!dateOfBirth.isValid()) {
             dateOfBirth = null;
-            console.warn("Invalid date format received:", data.user.date_of_birth_string);
+            console.warn(
+              "Invalid date format received:",
+              data.user.date_of_birth_string
+            );
           }
         }
 
         form.setFieldsValue({
-          full_name: data.user.full_name || '',
-          phone_number: data.user.phone_number || '',
+          full_name: data.user.full_name || "",
+          phone_number: data.user.phone_number || "",
           gender: data.user.gender === 1 ? "male" : "female",
-          date_of_birth: dateOfBirth
+          date_of_birth: dateOfBirth,
         });
       })
       .catch((error) => {
@@ -109,7 +117,7 @@ export default function Profile() {
 
   const handleUpdateProfile = async (values) => {
     try {
-      const formattedDate = values.date_of_birth 
+      const formattedDate = values.date_of_birth
         ? values.date_of_birth
             .hour(12)
             .minute(0)
@@ -122,7 +130,7 @@ export default function Profile() {
         full_name: values.full_name,
         phone_number: values.phone_number,
         gender: values.gender === "male" ? 1 : 2,
-        date_of_birth: formattedDate
+        date_of_birth: formattedDate,
       };
 
       await handleUpdateUserDetailsAPI(userDetails);
@@ -158,7 +166,7 @@ export default function Profile() {
       setEditingAddress(null);
       await fetchAddresses();
     } catch (error) {
-      console.error('Error saving address:', error);
+      console.error("Error saving address:", error);
       messageApi.open({
         type: "error",
         content: "Failed to save address",
@@ -170,17 +178,18 @@ export default function Profile() {
     if (isDefault) {
       messageApi.open({
         type: "warning",
-        content: "The default address cannot be deleted. Please set another address as default before deleting this one.",
+        content:
+          "The default address cannot be deleted. Please set another address as default before deleting this one.",
       });
       return;
     }
     Modal.confirm({
-      title: 'Are you sure you want to delete this address?',
+      title: "Are you sure you want to delete this address?",
       icon: <ExclamationCircleOutlined />,
-      content: 'This action cannot be undone.',
-      okText: 'Yes, delete it',
-      okType: 'danger',
-      cancelText: 'Cancel',
+      content: "This action cannot be undone.",
+      okText: "Yes, delete it",
+      okType: "danger",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
           await handleDeleteAddressAPI(addressId);
@@ -190,7 +199,7 @@ export default function Profile() {
           });
           await fetchAddresses();
         } catch (error) {
-          console.error('Error deleting address:', error);
+          console.error("Error deleting address:", error);
           messageApi.open({
             type: "error",
             content: "Failed to delete address",
@@ -209,7 +218,7 @@ export default function Profile() {
       });
       await fetchAddresses();
     } catch (error) {
-      console.error('Error setting default address:', error);
+      console.error("Error setting default address:", error);
       messageApi.open({
         type: "error",
         content: "Failed to update default address",
@@ -221,8 +230,8 @@ export default function Profile() {
     setEditingAddress(address);
     if (address) {
       addressForm.setFieldsValue({
-        Name: address.Name || '',
-        Address: address.Address || '',
+        Name: address.Name || "",
+        Address: address.Address || "",
       });
     } else {
       addressForm.resetFields();
@@ -291,8 +300,8 @@ export default function Profile() {
 
   const items = [
     {
-      key: '1',
-      label: 'Profile Information',
+      key: "1",
+      label: "Profile Information",
       children: (
         <Form
           form={form}
@@ -302,52 +311,58 @@ export default function Profile() {
           style={{ maxWidth: 1000 }}
           onFinish={handleUpdateProfile}
           initialValues={{
-            full_name: '',
-            phone_number: '',
-            gender: 'male',
-            date_of_birth: null
+            full_name: "",
+            phone_number: "",
+            gender: "male",
+            date_of_birth: null,
           }}
         >
-          <Form.Item label="Email">
-            {user?.email}
-          </Form.Item>
-          <Form.Item 
-            label="Name" 
+          <Form.Item label="Email">{user?.email}</Form.Item>
+          <Form.Item
+            label="Name"
             name="full_name"
-            rules={[{ required: true, message: 'Please input your name!' }]}
+            rules={[{ required: true, message: "Please input your name!" }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item 
-            label="Phone Number" 
+          <Form.Item
+            label="Phone Number"
             name="phone_number"
-            rules={[{ required: true, message: 'Please input your phone number!' }]}
+            rules={[
+              { required: true, message: "Please input your phone number!" },
+            ]}
           >
             <Input />
           </Form.Item>
-          <Form.Item 
-            label="Gender" 
+          <Form.Item
+            label="Gender"
             name="gender"
-            rules={[{ required: true, message: 'Please select your gender!' }]}
+            rules={[{ required: true, message: "Please select your gender!" }]}
           >
             <Select>
               <Select.Option value="male">Male</Select.Option>
               <Select.Option value="female">Female</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item 
-            label="Date of birth" 
+          <Form.Item
+            label="Date of birth"
             name="date_of_birth"
-            rules={[{ required: true, message: 'Please select your date of birth!' }]}
+            rules={[
+              { required: true, message: "Please select your date of birth!" },
+            ]}
           >
-            <DatePicker 
-              format={dateFormat} 
+            <DatePicker
+              format={dateFormat}
               allowClear={false}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             />
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 4, span: 10 }}>
-            <Button type="primary" htmlType="submit" className={styles.saveChangesButton}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className={styles.saveChangesButton}
+            >
               Save Changes
             </Button>
           </Form.Item>
@@ -355,8 +370,8 @@ export default function Profile() {
       ),
     },
     {
-      key: '2',
-      label: 'Address Information',
+      key: "2",
+      label: "Address Information",
       children: (
         <div>
           <Button
@@ -367,10 +382,10 @@ export default function Profile() {
           >
             Add New Address
           </Button>
-          
+
           <List
             dataSource={addresses}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item
                 actions={[
                   <Space key="actions">
@@ -383,7 +398,12 @@ export default function Profile() {
                     <Button
                       icon={<DeleteOutlined />}
                       danger
-                      onClick={() => handleDeleteAddress(item.AddressID, item.IsDefault === 1)}
+                      onClick={() =>
+                        handleDeleteAddress(
+                          item.AddressID,
+                          item.IsDefault === 1
+                        )
+                      }
                     >
                       Delete
                     </Button>
@@ -393,11 +413,13 @@ export default function Profile() {
                     >
                       Default Address
                     </Checkbox>
-                  </Space>
+                  </Space>,
                 ]}
               >
                 <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '18px' }}>{item.Name}</div>
+                  <div style={{ fontWeight: "bold", fontSize: "18px" }}>
+                    {item.Name}
+                  </div>
                   <div>{item.Address}</div>
                 </div>
               </List.Item>
@@ -422,17 +444,19 @@ export default function Profile() {
               <Form.Item
                 name="Name"
                 label="Address Name"
-                rules={[{ required: true, message: 'Please input address name!' }]}
+                rules={[
+                  { required: true, message: "Please input address name!" },
+                ]}
               >
                 <Input placeholder="e.g., Home, Office, etc." />
               </Form.Item>
               <Form.Item
                 name="Address"
                 label="Address"
-                rules={[{ required: true, message: 'Please input address!' }]}
+                rules={[{ required: true, message: "Please input address!" }]}
               >
-                <Input.TextArea 
-                  rows={4} 
+                <Input.TextArea
+                  rows={4}
                   placeholder="Enter your full address"
                 />
               </Form.Item>
@@ -442,8 +466,8 @@ export default function Profile() {
       ),
     },
     {
-      key: '3',
-      label: 'Change Password',
+      key: "3",
+      label: "Change Password",
       children: (
         <div>
           <Form
@@ -456,33 +480,45 @@ export default function Profile() {
             initialValues={{
               password: "",
               new_password: "",
-              confirm_password: ""
+              confirm_password: "",
             }}
           >
-            <Form.Item 
+            <Form.Item
               label="Current password"
               name="password"
-              rules={[{ required: true, message: 'Please input your current password!' }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your current password!",
+                },
+              ]}
             >
               <Input.Password />
             </Form.Item>
 
-            <Form.Item 
-              label="New password" 
+            <Form.Item
+              label="New password"
               name="new_password"
-              rules={[{ required: true, message: 'Please input your new password!' }]}
+              rules={[
+                { required: true, message: "Please input your new password!" },
+              ]}
             >
               <Input.Password />
             </Form.Item>
 
-            <Form.Item 
-              label="Confirm password" 
+            <Form.Item
+              label="Confirm password"
               name="confirm_password"
-              rules={[{ required: true, message: 'Please confirm your new password!' }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please confirm your new password!",
+                },
+              ]}
             >
               <Input.Password />
             </Form.Item>
-            
+
             <Form.Item wrapperCol={{ offset: 5, span: 8 }}>
               <Button
                 className={styles.saveChangesButton}
@@ -509,11 +545,7 @@ export default function Profile() {
         <UserSideBar />
         <div className={styles.details}>
           <p className={styles.profileTitle}>My Profile</p>
-          <Tabs 
-            activeKey={activeTab} 
-            onChange={setActiveTab} 
-            items={items} 
-          />
+          <Tabs activeKey={activeTab} onChange={setActiveTab} items={items} />
         </div>
       </div>
     </Layout>

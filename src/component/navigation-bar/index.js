@@ -12,7 +12,7 @@ import cartEvents from "../../utils/events";
 
 import { ShoppingCartOutlined, ShopOutlined } from "@ant-design/icons";
 import { BiUserCircle } from "react-icons/bi";
-import { Input, Layout, Dropdown, Badge, message} from "antd";
+import { Input, Layout, Dropdown, Badge, message } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 const { Search } = Input;
@@ -34,7 +34,9 @@ export default function NavigationBar() {
     if (token) {
       handleGetAllCartProductsAPI()
         .then((data) => {
-          const activeProducts = data.cart_products.filter(product => product.quantity > 0);
+          const activeProducts = data.cart_products.filter(
+            (product) => product.quantity > 0
+          );
           setCartProductsCount(activeProducts.length);
         })
         .catch((error) => {
@@ -88,7 +90,7 @@ export default function NavigationBar() {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       handleSearchProductsAPI(searchText)
-        .then(data => {
+        .then((data) => {
           setSearchResults(data);
           setShowDropdown(true);
         })
@@ -136,26 +138,43 @@ export default function NavigationBar() {
     <Header className={styles.header}>
       {contextHolder}
       <div className={styles.websiteLogo}>
-        <Link href="/"><ShopOutlined style={{ fontSize: 40 }} /></Link>
+        <Link href="/">
+          <ShopOutlined style={{ fontSize: 40 }} />
+        </Link>
       </div>
 
       <div style={{ position: "relative", width: "600px" }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <Search
             placeholder="input search text"
             className={styles.searchBar}
             value={searchText}
-            onChange={e => setSearchText(e.target.value)}
+            onChange={(e) => setSearchText(e.target.value)}
             onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
             onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
             enterButton
-            suffix={isSearching ? <span style={{ display: 'flex', alignItems: 'center', pointerEvents: 'none' }}><LoadingOutlined style={{ fontSize: 20, color: '#1890ff' }} spin /></span> : null}
+            suffix={
+              isSearching ? (
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    pointerEvents: "none",
+                  }}
+                >
+                  <LoadingOutlined
+                    style={{ fontSize: 20, color: "#1890ff" }}
+                    spin
+                  />
+                </span>
+              ) : null
+            }
             allowClear
           />
         </div>
         {showDropdown && searchResults.length > 0 && (
           <div className={styles.searchDropdown}>
-            {searchResults.map(item => (
+            {searchResults.map((item) => (
               <div
                 key={item.product_id}
                 className={styles.searchResultItem}
@@ -166,10 +185,17 @@ export default function NavigationBar() {
                   router.push(`/product/${item.product_id}`);
                 }}
               >
-                <img src={item.image_url} alt={item.product_name} className={styles.searchResultImage} />
+                <img
+                  src={item.image_url}
+                  alt={item.product_name}
+                  className={styles.searchResultImage}
+                />
                 <span style={{ marginLeft: 8 }}>{item.product_name}</span>
                 <span style={{ marginLeft: "auto" }}>
-                  {Intl.NumberFormat("vi-VI", { style: "currency", currency: "VND" }).format(item.price)}
+                  {Intl.NumberFormat("vi-VI", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(item.price)}
                 </span>
               </div>
             ))}
@@ -214,7 +240,9 @@ export default function NavigationBar() {
           trigger={["click", "hover"]}
           placement="bottom"
         >
-          <p className={styles.userEmail} style={{ fontSize: 20 }}>{userEmail}</p>
+          <p className={styles.userEmail} style={{ fontSize: 20 }}>
+            {userEmail}
+          </p>
         </Dropdown>
       ) : (
         <Dropdown menu={{ items }} trigger={["click"]} placement="bottom">

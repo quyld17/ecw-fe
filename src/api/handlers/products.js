@@ -1,6 +1,6 @@
 import getMethodAPI from "../methods/get-method-api";
 
-export function handleGetAllProductsAPI(currentPage, sort = '', category = '') {
+export function handleGetAllProductsAPI(currentPage, sort = "", category = "") {
   return new Promise((resolve, reject) => {
     let endpoint = `/products?page=${currentPage}`;
     if (sort) endpoint += `&sort=${sort}`;
