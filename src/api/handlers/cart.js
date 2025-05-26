@@ -117,3 +117,19 @@ export function handleDeleteCartProductAPI(cart_product_id) {
     );
   });
 }
+
+export function handleCheckCartQuantitiesAPI() {
+  return new Promise((resolve, reject) => {
+    const endpoint = "/products/quantity";
+
+    getMethodAPI(
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}

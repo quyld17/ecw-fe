@@ -24,6 +24,11 @@ export const columns = [
     align: "center",
   },
   {
+    title: <span style={{ fontSize: "20px" }}>Address</span>,
+    dataIndex: "address",
+    align: "center",
+  },
+  {
     title: <span style={{ fontSize: "20px" }}>Delivery Status</span>,
     dataIndex: "deliveryStatus",
     align: "center",
@@ -64,6 +69,7 @@ export const handleOrders = (orders) => {
         </p>
       ),
       paymentMethod: order.payment_method,
+      address: order.address,
       deliveryStatus: <Badge status={badgeStatus} text={order.status} />,
     };
   });
@@ -78,6 +84,11 @@ export const handleOrderProducts = (record, orders) => {
       dataIndex: "product",
       fontSize: "20px",
       width: "300px",
+    },
+    {
+      title: <span style={{ fontSize: "20px" }}>Size</span>,
+      dataIndex: "size",
+      align: "center",
     },
     {
       title: <span style={{ fontSize: "20px" }}>Quantity</span>,
@@ -99,7 +110,7 @@ export const handleOrderProducts = (record, orders) => {
   const matchedOrder = orders.find((order) => order.order_id === record.key);
 
   const data = matchedOrder.products.map((product) => ({
-    key: product.product_id,
+    key: product.id,
     product: (
       <div style={{ display: "flex", alignItems: "center" }}>
         <Link href={`/product/${product.product_id}`}>
@@ -114,6 +125,7 @@ export const handleOrderProducts = (record, orders) => {
         </Link>
       </div>
     ),
+    size: product.size_name,
     quantity: product.quantity,
     price: Intl.NumberFormat("vi-VI", {
       style: "currency",

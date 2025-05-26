@@ -13,6 +13,7 @@ import {
 import { handleCancel, handleOk } from "../../component/cart/delete-confirm";
 import { handleAdjustQuantity } from "../../component/cart/adjust-quantity";
 import { handleSelectProducts } from "../../component/cart/select-products";
+import { handleCheckCartQuantitiesAPI } from "../../api/handlers/cart";
 
 import styles from "./styles.module.css";
 
@@ -87,7 +88,7 @@ export default function CartPage() {
     onChange: handleSelectedProducts,
   };
 
-  const handleCheckOut = (selectedRowKeys) => {
+  const handleCheckOut = async (selectedRowKeys) => {
     if (selectedRowKeys.length === 0) {
       messageApi.open({
         type: "error",
@@ -95,8 +96,38 @@ export default function CartPage() {
           "You have not selected anything for check out. Please try again",
       });
       return;
-    } else {
+    }
+
+    try {
+      const quantityCheck = await handleCheckCartQuantitiesAPI();
+      
+      if (!quantityCheck.available) {
+        const unavailableMessages = quantityCheck.products.map(product => 
+          `${product.product_name} (${product.size_name}): Requested ${product.requested}, only ${product.available} available`
+        );
+
+        Modal.error({
+          title: 'Some products are not available in requested quantities',
+          content: (
+            <div>
+              <p>Please adjust the quantities for the following items:</p>
+              <ul>
+                {unavailableMessages.map((msg, index) => (
+                  <li key={index}>{msg}</li>
+                ))}
+              </ul>
+            </div>
+          ),
+        });
+        return;
+      }
+
       router.push("/check-out");
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Failed to verify product availability. Please try again.",
+      });
     }
   };
 
