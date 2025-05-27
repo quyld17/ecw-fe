@@ -1,0 +1,60 @@
+.productsTable :global(.ant-table) {
+  font-size: 16px;
+}
+
+.productsTable :global(.ant-table-thead > tr > th) {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.productsTable :global(.ant-table-cell) {
+  padding: 16px 8px;
+}
+
+.productsTable :global(.ant-pagination) {
+  font-size: 16px;
+}
+
+.searchInput {
+  font-size: 16px;
+  width: 300px;
+}
+
+.sortSelect {
+  font-size: 16px;
+  width: 200px;
+}
+
+.container {
+  padding: 20px;
+}
+
+.addButton {
+  font-size: 16px;
+  height: auto;
+  padding: 8px 16px;
+}
+
+.addButton :global(.anticon) {
+  font-size: 16px;
+}
+
+.modalForm :global(.ant-form-item-label) {
+  font-size: 16px;
+}
+
+.modalForm :global(.ant-input),
+.modalForm :global(.ant-input-number-input) {
+  font-size: 16px;
+  padding: 8px;
+}
+
+.modalForm :global(.ant-typography) {
+  font-size: 16px;
+}
+
+.modalForm :global(.ant-btn) {
+  font-size: 16px;
+  height: auto;
+  padding: 4px 8px;
+}

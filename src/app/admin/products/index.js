@@ -30,6 +30,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { debounce } from "lodash";
+import styles from "./styles.module.css";
 
 export default function ProductsTab() {
   const [products, setProducts] = useState([]);
@@ -285,7 +286,7 @@ export default function ProductsTab() {
   }, 1000);
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className={styles.container}>
       {contextHolder}
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
         <Space style={{ justifyContent: "space-between", width: "100%" }}>
@@ -294,6 +295,7 @@ export default function ProductsTab() {
             icon={<PlusOutlined />}
             onClick={handleAdd}
             size="large"
+            className={styles.addButton}
           >
             Add Product
           </Button>
@@ -303,12 +305,12 @@ export default function ProductsTab() {
               prefix={<SearchOutlined />}
               allowClear
               onChange={(e) => handleSearch(e.target.value)}
-              style={{ width: 300 }}
+              className={styles.searchInput}
             />
             <Select
               defaultValue={sort}
               onChange={setSort}
-              style={{ width: 200 }}
+              className={styles.sortSelect}
               options={[
                 { label: "Price: High to Low", value: "price_desc" },
                 { label: "Price: Low to High", value: "price_asc" },
@@ -330,6 +332,7 @@ export default function ProductsTab() {
             showSizeChanger: false,
           }}
           onChange={handleTableChange}
+          className={styles.productsTable}
         />
 
         <Modal
@@ -374,6 +377,7 @@ export default function ProductsTab() {
                   {}
                 ),
               }}
+              className={styles.modalForm}
             >
               <Form.Item
                 name="product_name"

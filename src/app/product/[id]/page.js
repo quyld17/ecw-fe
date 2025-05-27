@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import Head from "next/head";
+import { useRouter } from "next/navigation";
 
 import NavigationBar from "../../../component/navigation-bar/index";
 import styles from "./styles.module.css";
@@ -19,6 +20,7 @@ export default function ProductPage({ params }) {
   const [selectedSizeIndex, setSelectedSizeIndex] = useState(0);
   const [messageApi, contextHolder] = message.useMessage();
   const { id: productID } = use(params);
+  const router = useRouter();
 
   useEffect(() => {
     if (productID) {
@@ -27,6 +29,7 @@ export default function ProductPage({ params }) {
           setProductDetail(data);
         })
         .catch((error) => {
+          router.push("/");
           messageApi.open({
             type: "error",
             content: error.message == null ? error : error.message,

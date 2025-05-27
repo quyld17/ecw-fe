@@ -1,0 +1,49 @@
+.ordersTable :global(.ant-table) {
+  font-size: 16px;
+}
+
+.ordersTable :global(.ant-table-thead > tr > th) {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ordersTable :global(.ant-tag) {
+  font-size: 14px;
+  padding: 4px 8px;
+}
+
+.ordersTable :global(.ant-table-cell) {
+  padding: 16px 8px;
+}
+
+.ordersTable :global(.ant-table-expanded-row .ant-table-cell) {
+  padding: 12px 8px;
+}
+
+.ordersTable :global(.ant-pagination) {
+  font-size: 16px;
+}
+
+.ordersTable :global(.ant-table-row-expand-icon) {
+  font-size: 16px;
+  width: 24px;
+  height: 24px;
+}
+
+.searchInput {
+  font-size: 16px;
+  width: 300px;
+}
+
+.sortSelect {
+  font-size: 16px;
+  width: 200px;
+}
+
+.container {
+  padding: 20px;
+}
+
+.header {
+  margin: 0;
+}

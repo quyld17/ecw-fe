@@ -152,3 +152,36 @@ export function handleGetDefaultAddressAPI() {
     );
   });
 }
+
+export function handleGetCustomersByPageAPI(currentPage, search = "") {
+  return new Promise((resolve, reject) => {
+    let endpoint = `/admin/customers?page=${currentPage}`;
+    if (search) endpoint += `&search=${search}`;
+
+    getMethodAPI(
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
+
+export function handleGetCustomerOrdersAPI(customerId) {
+  return new Promise((resolve, reject) => {
+    const endpoint = `/admin/customers/${customerId}/orders`;
+
+    getMethodAPI(
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
