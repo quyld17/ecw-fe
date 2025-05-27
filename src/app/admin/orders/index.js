@@ -133,14 +133,12 @@ export default function OrdersTab() {
       title: "Order Date",
       dataIndex: "created_at_display",
       key: "date",
-      sorter: true,
     },
     {
       title: "Total Amount",
       dataIndex: "total_amount",
       key: "amount",
       render: (amount) => formatPrice(amount),
-      sorter: true,
     },
     {
       title: "Status",
@@ -226,13 +224,8 @@ export default function OrdersTab() {
     );
   };
 
-  const handleTableChange = (pagination, filters, sorter) => {
+  const handleTableChange = (pagination) => {
     setCurrentPage(pagination.current);
-
-    if (sorter.field && sorter.order) {
-      const sortOrder = sorter.order === "descend" ? "desc" : "asc";
-      setSort(`${sorter.field}_${sortOrder}`);
-    }
   };
 
   return (

@@ -90,7 +90,6 @@ export default function CustomersTab() {
       title: "Customer Name",
       dataIndex: "full_name",
       key: "name",
-      sorter: true,
     },
     {
       title: "Email",
@@ -106,7 +105,6 @@ export default function CustomersTab() {
       title: "Joined Date",
       dataIndex: "created_at",
       key: "date",
-      sorter: true,
     },
   ];
 

@@ -237,7 +237,6 @@ export default function ProductsTab() {
       title: "Name",
       dataIndex: "product_name",
       key: "name",
-      sorter: true,
     },
     {
       title: "Price",
@@ -248,13 +247,11 @@ export default function ProductsTab() {
           style: "currency",
           currency: "VND",
         }).format(price),
-      sorter: true,
     },
     {
       title: "Quantity",
       dataIndex: "total_quantity",
       key: "quantity",
-      sorter: true,
     },
     {
       title: "Action",
@@ -271,13 +268,8 @@ export default function ProductsTab() {
     },
   ];
 
-  const handleTableChange = (pagination, filters, sorter) => {
+  const handleTableChange = (pagination) => {
     setCurrentPage(pagination.current);
-
-    if (sorter.field && sorter.order) {
-      const sortOrder = sorter.order === "descend" ? "desc" : "asc";
-      setSort(`${sorter.field}_${sortOrder}`);
-    }
   };
 
   const handleSearch = debounce((value) => {
