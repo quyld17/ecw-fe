@@ -6,6 +6,7 @@ import {
   handleDeleteProductAPI,
   handleGetProductDetailsAPI,
   handleUpdateProductAPI,
+  handleAddProductAPI,
 } from "../../../api/handlers/products";
 import {
   Table,
@@ -47,6 +48,7 @@ export default function ProductsTab() {
   const [isAddingSize, setIsAddingSize] = useState(false);
   const [newImageUrl, setNewImageUrl] = useState("");
   const [newSizeName, setNewSizeName] = useState("");
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
 
   const pageSize = 10;
 
@@ -98,6 +100,29 @@ export default function ProductsTab() {
     }
   };
 
+  const handleAdd = () => {
+    setSelectedProduct({ product_id: 0 });
+    setProductDetails({
+      product_detail: {
+        product_name: "",
+        price: 0,
+      },
+      product_images: [],
+      product_sizes: [],
+    });
+    form.resetFields();
+    setIsAddingProduct(true);
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setIsAddingProduct(false);
+    setSelectedProduct(null);
+    setProductDetails(null);
+    form.resetFields();
+  };
+
   const handleModalOk = async () => {
     try {
       const values = await form.validateFields();
@@ -107,7 +132,24 @@ export default function ProductsTab() {
         0
       );
 
-      const updateData = {
+      // Validate required fields for new product
+      if (isAddingProduct) {
+        if (
+          !values.product_name ||
+          !values.price ||
+          productDetails.product_images.length === 0 ||
+          productDetails.product_sizes.length === 0
+        ) {
+          messageApi.open({
+            type: "error",
+            content:
+              "Please fill all required fields (name, price, at least 1 image and 1 size)",
+          });
+          return;
+        }
+      }
+
+      const productData = {
         product: {
           product_id: selectedProduct.product_id,
           name: values.product_name,
@@ -122,17 +164,30 @@ export default function ProductsTab() {
       };
 
       try {
-        await handleUpdateProductAPI(updateData);
-        messageApi.open({
-          type: "success",
-          content: "Product updated successfully",
-        });
+        if (isAddingProduct) {
+          await handleAddProductAPI(productData);
+          messageApi.open({
+            type: "success",
+            content: "Product added successfully",
+          });
+        } else {
+          await handleUpdateProductAPI(productData);
+          messageApi.open({
+            type: "success",
+            content: "Product updated successfully",
+          });
+        }
         setIsModalVisible(false);
+        setIsAddingProduct(false);
         fetchProducts();
       } catch (apiError) {
         messageApi.open({
           type: "error",
-          content: apiError.message || "Failed to update product",
+          content:
+            apiError.message ||
+            (isAddingProduct
+              ? "Failed to add product"
+              : "Failed to update product"),
         });
       }
     } catch (formError) {
@@ -241,7 +296,14 @@ export default function ProductsTab() {
       {contextHolder}
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
         <Space style={{ justifyContent: "space-between", width: "100%" }}>
-          <Title level={3}>Products Management</Title>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAdd}
+            size="large"
+          >
+            Add Product
+          </Button>
           <Space>
             <Input
               placeholder="Search products..."
@@ -278,28 +340,30 @@ export default function ProductsTab() {
         />
 
         <Modal
-          title="Edit Product"
+          title={isAddingProduct ? "Add New Product" : "Edit Product"}
           open={isModalVisible}
           onOk={handleModalOk}
-          onCancel={() => setIsModalVisible(false)}
+          onCancel={handleCloseModal}
           width={800}
           footer={[
-            <Button key="cancel" onClick={() => setIsModalVisible(false)}>
+            <Button key="cancel" onClick={handleCloseModal}>
               Cancel
             </Button>,
             <Button key="submit" type="primary" onClick={handleModalOk}>
-              Save Changes
+              {isAddingProduct ? "Add" : "Save Changes"}
             </Button>,
-            <Button
-              key="delete"
-              danger
-              type="primary"
-              icon={<DeleteOutlined />}
-              onClick={handleDelete}
-              style={{ position: "absolute", left: 24 }}
-            >
-              Delete
-            </Button>,
+            !isAddingProduct && (
+              <Button
+                key="delete"
+                danger
+                type="primary"
+                icon={<DeleteOutlined />}
+                onClick={handleDelete}
+                style={{ position: "absolute", left: 24 }}
+              >
+                Delete
+              </Button>
+            ),
           ]}
         >
           {productDetails && (
@@ -318,7 +382,6 @@ export default function ProductsTab() {
                 ),
               }}
             >
-              {/* Basic Product Info */}
               <Form.Item
                 name="product_name"
                 label="Product Name"
@@ -344,7 +407,6 @@ export default function ProductsTab() {
                 />
               </Form.Item>
 
-              {/* Product Images */}
               <div style={{ marginBottom: 24 }}>
                 <div
                   style={{
@@ -442,7 +504,6 @@ export default function ProductsTab() {
                 />
               </div>
 
-              {/* Size Management */}
               <div>
                 <div
                   style={{

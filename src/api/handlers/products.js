@@ -1,6 +1,7 @@
 import getMethodAPI from "../methods/get-method-api";
 import deleteMethodAPI from "../methods/delete-method-api";
 import putMethodAPI from "../methods/put-method-api";
+import postMethodAPI from "../methods/post-method-api";
 
 export function handleGetAllProductsAPI(currentPage, sort = "", search = "") {
   return new Promise((resolve, reject) => {
@@ -80,6 +81,23 @@ export const handleUpdateProductAPI = async (updateData) => {
       },
       (error) => {
         reject(new Error(error.message || "Failed to update product"));
+      }
+    );
+  });
+};
+
+export const handleAddProductAPI = async (productData) => {
+  return new Promise((resolve, reject) => {
+    const endpoint = `/admin/products`;
+
+    postMethodAPI(
+      productData,
+      endpoint,
+      (response) => {
+        resolve(response);
+      },
+      (error) => {
+        reject(new Error(error.message || "Failed to add product"));
       }
     );
   });
