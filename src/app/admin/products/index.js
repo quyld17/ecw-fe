@@ -29,8 +29,7 @@ import {
   DeleteOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-
-const { Title } = Typography;
+import { debounce } from "lodash";
 
 export default function ProductsTab() {
   const [products, setProducts] = useState([]);
@@ -49,6 +48,7 @@ export default function ProductsTab() {
   const [newImageUrl, setNewImageUrl] = useState("");
   const [newSizeName, setNewSizeName] = useState("");
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
   const pageSize = 10;
 
@@ -132,21 +132,18 @@ export default function ProductsTab() {
         0
       );
 
-      // Validate required fields for new product
-      if (isAddingProduct) {
-        if (
-          !values.product_name ||
-          !values.price ||
-          productDetails.product_images.length === 0 ||
-          productDetails.product_sizes.length === 0
-        ) {
-          messageApi.open({
-            type: "error",
-            content:
-              "Please fill all required fields (name, price, at least 1 image and 1 size)",
-          });
-          return;
-        }
+      if (
+        !values.product_name ||
+        !values.price ||
+        productDetails.product_images.length === 0 ||
+        productDetails.product_sizes.length === 0
+      ) {
+        messageApi.open({
+          type: "error",
+          content:
+            "Please fill all required fields (name, price, at least 1 image and 1 size)",
+        });
+        return;
       }
 
       const productData = {
@@ -199,24 +196,20 @@ export default function ProductsTab() {
   };
 
   const handleDelete = async () => {
-    if (selectedProduct) {
-      handleDeleteProductAPI(selectedProduct.product_id)
-        .then((data) => {
-          console.log(data);
-          messageApi.open({
-            type: "success",
-            content: data,
-          });
-          setIsModalVisible(false);
-          fetchProducts();
-        })
-        .catch((error) => {
-          console.log(error);
-          messageApi.open({
-            type: "error",
-            content: error,
-          });
-        });
+    try {
+      await handleDeleteProductAPI(selectedProduct.product_id);
+      messageApi.open({
+        type: "success",
+        content: "Product deleted successfully",
+      });
+      setIsModalVisible(false);
+      setIsDeleteModalVisible(false);
+      fetchProducts();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: error.message || "Failed to delete product",
+      });
     }
   };
 
@@ -286,10 +279,10 @@ export default function ProductsTab() {
     }
   };
 
-  const handleSearch = (value) => {
+  const handleSearch = debounce((value) => {
     setSearchQuery(value);
     setCurrentPage(1);
-  };
+  }, 1000);
 
   return (
     <div style={{ padding: "20px" }}>
@@ -358,7 +351,7 @@ export default function ProductsTab() {
                 danger
                 type="primary"
                 icon={<DeleteOutlined />}
-                onClick={handleDelete}
+                onClick={() => setIsDeleteModalVisible(true)}
                 style={{ position: "absolute", left: 24 }}
               >
                 Delete
@@ -636,6 +629,39 @@ export default function ProductsTab() {
                 />
               </div>
             </Form>
+          )}
+        </Modal>
+
+        <Modal
+          title="Confirm Delete"
+          open={isDeleteModalVisible}
+          onCancel={() => setIsDeleteModalVisible(false)}
+          footer={[
+            <Button key="cancel" onClick={() => setIsDeleteModalVisible(false)}>
+              Cancel
+            </Button>,
+            <Button
+              key="delete"
+              danger
+              type="primary"
+              onClick={handleDelete}
+              icon={<DeleteOutlined />}
+            >
+              Delete
+            </Button>,
+          ]}
+        >
+          <p>
+            Are you sure you want to delete this product? This action cannot be
+            undone.
+          </p>
+          {productDetails && (
+            <div style={{ marginTop: 16 }}>
+              <p>
+                <strong>Product Name:</strong>{" "}
+                {productDetails.product_detail.product_name}
+              </p>
+            </div>
           )}
         </Modal>
       </Space>
