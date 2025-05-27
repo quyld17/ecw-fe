@@ -66,6 +66,10 @@ export default function NavigationBar() {
         const userEmail = decodedToken.email;
         setUserEmail(userEmail);
         updateCartCount();
+
+        if (decodedToken.role === "Admin") {
+          router.push("/admin");
+        }
       }
     }
   }, []);

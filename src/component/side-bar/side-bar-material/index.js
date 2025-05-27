@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import handleGetAllCategoriesAPI from "../../../api/handlers/categories";
+import React from "react";
 import { TbArrowsSort } from "react-icons/tb";
 import {
   BsSortUp,
@@ -9,12 +8,6 @@ import {
 } from "react-icons/bs";
 
 export default function SideBarMaterials() {
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    handleGetAllCategoriesAPI(setCategories);
-  }, []);
-
   function getItem(label, key, icon, items) {
     return {
       key,

@@ -28,8 +28,18 @@ export default function SignInPage() {
     if (!credentialsValidate(email, password)) {
       handleSignInAPI(email, password)
         .then((data) => {
-          localStorage.setItem("token", data.token);
-          router.push("/");
+          const token = data.token;
+          localStorage.setItem("token", token);
+
+          const base64Url = token.split(".")[1];
+          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          const payload = JSON.parse(window.atob(base64));
+
+          if (payload.role === "Admin") {
+            router.push("/admin");
+          } else {
+            router.push("/");
+          }
         })
         .catch((error) => {
           messageApi.open({
@@ -46,7 +56,7 @@ export default function SignInPage() {
         return "Email must not be empty! Please try again";
       } else if (!password) {
         return "Password must not be empty! Please try again";
-      } else if (!validator.isEmail(email)) {
+      } else if (!validator.isEmail(email) && email !== "admin") {
         return "Invalid email address! Email must include '@' and a domain";
       }
       return null;

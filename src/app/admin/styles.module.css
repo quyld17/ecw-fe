@@ -1,0 +1,72 @@
+.adminLayout {
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  background: #001529;
+  justify-content: space-between;
+}
+
+.logo {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 48px;
+  white-space: nowrap;
+}
+
+.signOutButton {
+  background: #1890ff;
+  font-size: 16px;
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 6px;
+}
+
+.signOutButton:hover {
+  background: #40a9ff;
+}
+
+.menu {
+  flex: 1;
+  min-width: 0;
+}
+
+.content {
+  padding: 24px;
+  margin: 24px;
+  background: white;
+  border-radius: 14px;
+  min-height: 280px;
+  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+}
+
+.details {
+  width: 100%;
+}
+
+.details :global(.ant-tabs-tab) {
+  font-size: 18px;
+  padding: 12px 0;
+}
+
+.details :global(.ant-tabs-tab + .ant-tabs-tab) {
+  margin-left: 32px;
+}
+
+/* Make the tab content text bigger */
+.details :global(.ant-tabs-content) {
+  font-size: 16px;
+  padding: 24px 0;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #1a1a1a;
+}

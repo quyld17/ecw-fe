@@ -185,6 +185,7 @@ export default function ProductPage({ params }) {
                   type="primary"
                   size={"large"}
                   onClick={handleAddToCartClick}
+                  disabled={selectedSize?.quantity === 0}
                 >
                   Add to cart
                 </Button>

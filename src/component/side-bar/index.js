@@ -30,10 +30,6 @@ export default function SideBar() {
       }
       router.push(`/?page=${currentPage}&sort=${sort}`);
     }
-
-    if (key >= 5) {
-      router.push(`/?page=${currentPage}&category=${key - 4}`);
-    }
   };
 
   const renderMenuItems = (menuItems) => {

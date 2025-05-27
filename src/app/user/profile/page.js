@@ -90,13 +90,13 @@ export default function Profile() {
       .then((data) => {
         setUser(data.user);
         let dateOfBirth = null;
-        if (data.user.date_of_birth_string) {
-          dateOfBirth = dayjs(data.user.date_of_birth_string);
+        if (data.user.date_of_birth_display) {
+          dateOfBirth = dayjs(data.user.date_of_birth_display);
           if (!dateOfBirth.isValid()) {
             dateOfBirth = null;
             console.warn(
               "Invalid date format received:",
-              data.user.date_of_birth_string
+              data.user.date_of_birth_display
             );
           }
         }

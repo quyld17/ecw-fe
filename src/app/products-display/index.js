@@ -22,10 +22,9 @@ export default function ProductsDisplay() {
 
     const page = searchParams.get("page") || 1;
     const sort = searchParams.get("sort") || "";
-    const category = searchParams.get("category") || "";
     setCurrentPage(parseInt(page));
 
-    handleGetAllProductsAPI(page, sort, category)
+    handleGetAllProductsAPI(page, sort, searchParams)
       .then((data) => {
         setProducts(data.products);
         setNumOfProds(data.num_of_prods);
@@ -41,10 +40,8 @@ export default function ProductsDisplay() {
 
   const handlePageChange = (page) => {
     const currentSort = searchParams.get("sort") || "";
-    const currentCategory = searchParams.get("category") || "";
     let url = `?page=${page}`;
     if (currentSort) url += `&sort=${currentSort}`;
-    if (currentCategory) url += `&category=${currentCategory}`;
     router.push(url);
   };
 
