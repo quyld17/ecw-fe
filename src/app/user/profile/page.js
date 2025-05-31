@@ -74,7 +74,6 @@ export default function Profile() {
         setAddresses([]);
       }
     } catch (error) {
-      console.error("Error fetching addresses:", error);
       setAddresses([]);
     }
   };
