@@ -22,11 +22,6 @@ export const cartColumns = [
     dataIndex: "quantityDisplay",
     align: "center",
   },
-  // {
-  //   title: "Total Price",
-  //   dataIndex: "totalPrice",
-  //   align: "center",
-  // },
   {
     title: "Action",
     dataIndex: "action",

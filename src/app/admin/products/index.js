@@ -1,5 +1,6 @@
 "use client";
 
+import "@ant-design/v5-patch-for-react-19";
 import { useState, useEffect } from "react";
 import {
   handleGetAllProductsAPI,
@@ -28,6 +29,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   PlusOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import { debounce } from "lodash";
 import styles from "./styles.module.css";
@@ -50,6 +52,7 @@ export default function ProductsTab() {
   const [newSizeName, setNewSizeName] = useState("");
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const pageSize = 10;
 
@@ -111,7 +114,10 @@ export default function ProductsTab() {
       product_images: [],
       product_sizes: [],
     });
-    form.resetFields();
+    form.setFieldsValue({
+      product_name: "",
+      price: 0,
+    });
     setIsAddingProduct(true);
     setIsModalVisible(true);
   };
@@ -121,7 +127,6 @@ export default function ProductsTab() {
     setIsAddingProduct(false);
     setSelectedProduct(null);
     setProductDetails(null);
-    form.resetFields();
   };
 
   const handleModalOk = async () => {
@@ -273,8 +278,10 @@ export default function ProductsTab() {
   };
 
   const handleSearch = debounce((value) => {
+    setIsSearching(true);
     setSearchQuery(value);
     setCurrentPage(1);
+    setTimeout(() => setIsSearching(false), 1000);
   }, 1000);
 
   return (
@@ -292,6 +299,19 @@ export default function ProductsTab() {
             Add Product
           </Button>
           <Space>
+            {isSearching && searchQuery !== "" && (
+              <div
+                style={{ display: "flex", alignItems: "center", marginTop: 8 }}
+              >
+                <LoadingOutlined
+                  style={{ fontSize: 24, color: "#1890ff" }}
+                  spin
+                />
+                <span style={{ marginLeft: 8, color: "#1890ff" }}>
+                  Searching...
+                </span>
+              </div>
+            )}
             <Input
               placeholder="Search products..."
               prefix={<SearchOutlined />}

@@ -1,5 +1,5 @@
 "use client";
-
+import "@ant-design/v5-patch-for-react-19";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -184,27 +184,26 @@ export default function Profile() {
     }
     Modal.confirm({
       title: "Are you sure you want to delete this address?",
-      icon: <ExclamationCircleOutlined />,
       content: "This action cannot be undone.",
       okText: "Yes, delete it",
       okType: "danger",
       cancelText: "Cancel",
-      onOk: async () => {
-        try {
-          await handleDeleteAddressAPI(addressId);
-          messageApi.open({
-            type: "success",
-            content: "Address deleted successfully!",
-          });
-          await fetchAddresses();
-        } catch (error) {
-          console.error("Error deleting address:", error);
-          messageApi.open({
-            type: "error",
-            content: "Failed to delete address",
-          });
-        }
-      },
+      onOk: () =>
+        handleDeleteAddressAPI(addressId)
+          .then(() => {
+            messageApi.open({
+              type: "success",
+              content: "Address deleted successfully!",
+            });
+            fetchAddresses();
+          })
+          .catch((error) => {
+            console.error("Error deleting address:", error);
+            messageApi.open({
+              type: "error",
+              content: "Failed to delete address",
+            });
+          }),
     });
   };
 

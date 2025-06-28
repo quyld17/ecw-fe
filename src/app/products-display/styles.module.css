@@ -21,10 +21,8 @@
 }
 
 .paginationContainer {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding-bottom: 20px;
-  padding-right: 10px;
-  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  margin-bottom: 24px;
 }

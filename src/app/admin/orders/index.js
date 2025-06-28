@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Table, Input, Space, Select, Typography, Image, message } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, LoadingOutlined } from "@ant-design/icons";
 import { debounce } from "lodash";
 import {
   handleGetOrdersByPageAPI,
@@ -18,6 +18,7 @@ export default function OrdersTab() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sort, setSort] = useState("date_desc");
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const pageSize = 10;
 
@@ -64,8 +65,10 @@ export default function OrdersTab() {
   };
 
   const handleSearch = debounce((value) => {
+    setIsSearching(true);
     setSearchQuery(value);
     setCurrentPage(1);
+    setTimeout(() => setIsSearching(false), 1000);
   }, 1000);
 
   const formatPrice = (price) => {
@@ -236,6 +239,19 @@ export default function OrdersTab() {
             Orders Management
           </Typography.Title>
           <Space>
+            {isSearching && searchQuery !== "" && (
+              <div
+                style={{ display: "flex", alignItems: "center", marginTop: 8 }}
+              >
+                <LoadingOutlined
+                  style={{ fontSize: 24, color: "#1890ff" }}
+                  spin
+                />
+                <span style={{ marginLeft: 8, color: "#1890ff" }}>
+                  Searching...
+                </span>
+              </div>
+            )}
             <Input
               placeholder="Search orders..."
               prefix={<SearchOutlined />}

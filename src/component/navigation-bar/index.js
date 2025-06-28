@@ -174,6 +174,12 @@ export default function NavigationBar() {
               ) : null
             }
             allowClear
+            onSearch={(value) => {
+              setShowDropdown(false);
+              if (value && value.trim()) {
+                router.push(`?search=${encodeURIComponent(value.trim())}`);
+              }
+            }}
           />
         </div>
         {showDropdown && searchResults.length > 0 && (

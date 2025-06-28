@@ -3,6 +3,7 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import "@ant-design/v5-patch-for-react-19";
 
 import NavigationBar from "../../component/navigation-bar/index";
 import styles from "./styles.module.css";
@@ -410,16 +411,11 @@ export default function CheckOut() {
         <Radio.Group value={paymentMethod} onChange={handlePaymentMethodSelect}>
           <Space direction="vertical">
             <Radio
+              defaultChecked={true}
               className={styles.paymentMethodSelectField}
               value="Cash on Delivery"
             >
               Cash on Delivery
-            </Radio>
-            <Radio
-              className={styles.paymentMethodSelectField}
-              value="Bank Transfer"
-            >
-              Bank Transfer
             </Radio>
           </Space>
         </Radio.Group>

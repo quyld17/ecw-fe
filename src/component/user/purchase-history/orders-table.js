@@ -1,5 +1,6 @@
-import Link from "next/link";
-import { Table, Badge } from "antd";
+import { Table, Badge, message } from "antd";
+import { useRouter } from "next/navigation";
+import { handleCheckProductExistsAPI } from "../../../api/handlers/products";
 
 export const columns = [
   {
@@ -77,7 +78,23 @@ export const handleOrders = (orders) => {
   return data;
 };
 
-export const handleOrderProducts = (record, orders) => {
+const OrderProductsTable = ({ record, orders }) => {
+  const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const handleProductClick = async (productId, productName) => {
+    try {
+      await handleCheckProductExistsAPI(productId);
+      router.push(`/product/${productId}`);
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: `Product "${productName}" is no longer available`,
+        duration: 3,
+      });
+    }
+  };
+
   const orderDetailsColumns = [
     {
       title: <span style={{ fontSize: "20px" }}>Products</span>,
@@ -113,16 +130,26 @@ export const handleOrderProducts = (record, orders) => {
     key: product.id,
     product: (
       <div style={{ display: "flex", alignItems: "center" }}>
-        <Link href={`/product/${product.product_id}`}>
+        <div
+          style={{ marginRight: "10px", width: "100px", cursor: "pointer" }}
+          onClick={() =>
+            handleProductClick(product.product_id, product.product_name)
+          }
+        >
           <img
-            style={{ marginRight: "10px", width: "100px" }}
+            style={{ width: "100%" }}
             src={product.image_url}
             alt={product.product_name}
           />
-        </Link>
-        <Link href={`/product/${product.product_id}`}>
-          <span>{product.product_name}</span>
-        </Link>
+        </div>
+        <span
+          style={{ cursor: "pointer", color: "#1890ff" }}
+          onClick={() =>
+            handleProductClick(product.product_id, product.product_name)
+          }
+        >
+          {product.product_name}
+        </span>
       </div>
     ),
     size: product.size_name,
@@ -138,12 +165,19 @@ export const handleOrderProducts = (record, orders) => {
   }));
 
   return (
-    <Table
-      showHeader={true}
-      tableLayout="fixed"
-      pagination={false}
-      columns={orderDetailsColumns}
-      dataSource={data}
-    ></Table>
+    <>
+      {contextHolder}
+      <Table
+        showHeader={true}
+        tableLayout="fixed"
+        pagination={false}
+        columns={orderDetailsColumns}
+        dataSource={data}
+      ></Table>
+    </>
   );
+};
+
+export const handleOrderProducts = (record, orders) => {
+  return <OrderProductsTable record={record} orders={orders} />;
 };

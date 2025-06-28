@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import SideBarMaterials from "./side-bar-material/index";
 import { Layout, Menu } from "antd";
@@ -11,6 +13,7 @@ export default function SideBar() {
 
   const handleMenuClick = ({ key }) => {
     const currentPage = searchParams.get("page") || 1;
+    const currentSearch = searchParams.get("search") || "";
 
     if (key >= 1 && key <= 4) {
       let sort = "";
@@ -28,7 +31,9 @@ export default function SideBar() {
           sort = "name_desc";
           break;
       }
-      router.push(`/?page=${currentPage}&sort=${sort}`);
+      let url = `?page=${currentPage}&sort=${sort}`;
+      if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
+      router.push(url);
     }
   };
 

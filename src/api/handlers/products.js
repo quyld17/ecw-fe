@@ -3,6 +3,22 @@ import deleteMethodAPI from "../methods/delete-method-api";
 import putMethodAPI from "../methods/put-method-api";
 import postMethodAPI from "../methods/post-method-api";
 
+export function handleCheckProductExistsAPI(product_id) {
+  return new Promise((resolve, reject) => {
+    const endpoint = `/products/${product_id}/exists`;
+
+    getMethodAPI(
+      endpoint,
+      (data) => {
+        resolve(data);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
+
 export function handleGetAllProductsAPI(currentPage, sort = "", search = "") {
   return new Promise((resolve, reject) => {
     let endpoint = `/products?page=${currentPage}`;
@@ -59,7 +75,6 @@ export function handleDeleteProductAPI(product_id) {
     deleteMethodAPI(
       endpoint,
       (data) => {
-        console.log(data);
         resolve(data);
       },
       (error) => {
